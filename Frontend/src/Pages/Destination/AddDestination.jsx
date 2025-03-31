@@ -10,6 +10,11 @@ import axios from 'axios';
 import swal from 'sweetalert';
 
 const AddDestination = () => {
+  const generateRandomId = () => {
+    const prefix = 'DEST';
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return `${prefix}${randomNum}`;
+  };
   const [destinationId, setDestinationId] = useState('');
   const [destinationName, setDestinationName] = useState('');
   const [destinationImage, setDestinationImage] = useState('');
@@ -28,6 +33,7 @@ const AddDestination = () => {
   const [previewImage, setPreviewImage] = useState('');
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+
 
   // Climate options
   const climateOptions = [
@@ -233,6 +239,10 @@ const AddDestination = () => {
     }
   };
 
+  useEffect(() => {
+    setDestinationId(generateRandomId());
+  }, []);
+
   return (
     <Box>
       <Box display="flex">
@@ -277,6 +287,7 @@ const AddDestination = () => {
                   error={!!errors.destinationId}
                   required
                   style={{marginTop:'20px'}}
+                  disabled
                 />
                 <TextField
                   fullWidth
@@ -288,6 +299,17 @@ const AddDestination = () => {
                     setDestinationName(e.target.value);
                     if (errors.destinationName) {
                       setErrors(prevErrors => ({ ...prevErrors, destinationName: '' }));
+                    }
+                  }}
+                  // Prevent number input
+                  inputProps={{
+                    pattern: "[A-Za-z ]*",
+                    title: "Numbers are not allowed"
+                  }}
+                  onKeyDown={(e) => {
+                    // Prevent number keys (0-9) and numpad numbers (Numpad0-Numpad9)
+                    if (/\d/.test(e.key)) {
+                      e.preventDefault();
                     }
                   }}
                   helperText={errors.destinationName}
@@ -305,6 +327,17 @@ const AddDestination = () => {
                     setLocation(e.target.value);
                     if (errors.location) {
                       setErrors(prevErrors => ({ ...prevErrors, location: '' }));
+                    }
+                  }}
+                  // Prevent number input
+                  inputProps={{
+                    pattern: "[A-Za-z ]*",
+                    title: "Numbers are not allowed"
+                  }}
+                  onKeyDown={(e) => {
+                    // Prevent number keys (0-9) and numpad numbers (Numpad0-Numpad9)
+                    if (/\d/.test(e.key)) {
+                      e.preventDefault();
                     }
                   }}
                   helperText={errors.location}
