@@ -2,26 +2,19 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { 
   Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
-  Paper, TextField, MenuItem, FormControl, Select, InputLabel, TablePagination, 
-  Avatar, Chip, IconButton, Collapse, Grid, Card, CardContent, CardHeader, Divider, List, ListItem, ListItemText
+  Paper, Button, TextField, MenuItem, FormControl, Select, InputLabel, TablePagination, 
+  Avatar, Chip, Tooltip, IconButton, Collapse 
 } from '@material-ui/core';
 import Swal from 'sweetalert2';
 import Sidebar from '../../Components/sidebar';
+import Header from '../../Components/navbar';
 import { makeStyles } from '@material-ui/core/styles';
 import { useNavigate } from 'react-router-dom';
 import Rating from '@material-ui/lab/Rating';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DeleteIcon from '@material-ui/icons/Delete';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import EditIcon from '@material-ui/icons/Edit';
-import EventIcon from '@material-ui/icons/Event';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import PhoneIcon from '@material-ui/icons/Phone';
-import EmailIcon from '@material-ui/icons/Email';
-import WebIcon from '@material-ui/icons/Language';
-import StarIcon from '@material-ui/icons/Star';
-import RoomIcon from '@material-ui/icons/Room';
-import TravelExploreIcon from '@material-ui/icons/ExploreOutlined'; 
-import DescriptionIcon from '@material-ui/icons/Description';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 // Custom Pagination Component
 const CustomPagination = ({ count, page, rowsPerPage, onPageChange }) => {
@@ -32,8 +25,8 @@ const CustomPagination = ({ count, page, rowsPerPage, onPageChange }) => {
       page={page}
       rowsPerPage={rowsPerPage}
       onPageChange={onPageChange}
-      rowsPerPageOptions={[]}
-      labelRowsPerPage=""
+      rowsPerPageOptions={[]} // Hide rows per page selector
+      labelRowsPerPage="" // Hide rows per page label
     />
   );
 };
@@ -75,130 +68,39 @@ const useStyles = makeStyles((theme) => ({
   tableContainer: {
     width: '100%',
     overflowX: 'auto',
-    marginBottom: theme.spacing(3),
-    borderRadius: 8,
-    '& .MuiTable-root': {
-      borderCollapse: 'separate',
-      borderSpacing: '0 8px'
-    },
   },
-  tableRow: {
-    backgroundColor: '#f9f9f9',
-    '&:hover': {
-      backgroundColor: '#f1f1f1',
-    },
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-    borderRadius: 8,
+  hotelImage: {
+    width: 50,
+    height: 50,
+    borderRadius: '50%',
+    objectFit: 'cover',
   },
-  tableHeadRow: {
+  packageCount: {
     backgroundColor: '#d4ac0d',
-  },
-  tableHeadCell: {
     color: 'white',
+    borderRadius: '12px',
+    padding: '3px 8px',
+    fontSize: '0.75rem',
     fontWeight: 'bold',
+    display: 'inline-block',
   },
-  hotelAvatar: {
-    width: 60,
-    height: 60,
-    backgroundColor: theme.palette.primary.main,
-    boxShadow: '0 3px 5px rgba(0,0,0,0.2)',
-    border: '2px solid white',
-  },
-  ratingChip: {
-    marginLeft: theme.spacing(1),
-    backgroundColor: theme.palette.grey[200],
-    fontWeight: 'bold',
-  },
-  detailsContainer: {
-    padding: theme.spacing(3),
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    margin: theme.spacing(2, 0),
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-  },
-  userInfoFlex: {
-    display: 'flex',
+  collapsible: {
     padding: theme.spacing(2),
-    borderRadius: 8,
-    backgroundColor: '#f8f9fa',
-    marginBottom: theme.spacing(3),
+    backgroundColor: '#f9f9f9',
+    borderRadius: '4px',
   },
-  hotelAvatarLarge: {
-    width: 100,
-    height: 100,
-    marginRight: theme.spacing(4),
-    boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-    border: '3px solid white',
-  },
-  hotelDetailsSection: {
-    flex: 1,
+  chipContainer: {
     display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  hotelName: {
-    fontWeight: 'bold',
-    fontSize: '1.2rem',
-    marginBottom: theme.spacing(1),
-    color: theme.palette.primary.dark,
-  },
-  cardHeader: {
-    backgroundColor: theme.palette.primary.main,
-    color: 'white',
-    padding: theme.spacing(1.5),
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-  },
-  cardHeaderLocation: {
-    backgroundColor: '#43a047',
-  },
-  cardHeaderContact: {
-    backgroundColor: '#1976d2',
-  },
-  cardHeaderRating: {
-    backgroundColor: '#7b1fa2',
-  },
-  cardIcon: {
-    marginRight: theme.spacing(1),
-    color: 'white',
-  },
-  infoRow: {
-    display: 'flex',
-    alignItems: 'center',
-    margin: theme.spacing(1.5, 0),
-    '& svg': {
-      marginRight: theme.spacing(1),
-      color: theme.palette.primary.main,
-    },
-  },
-  infoLabel: {
-    fontWeight: 'bold',
-    color: theme.palette.text.secondary,
-    minWidth: 120,
-  },
-  infoValue: {
-    color: theme.palette.text.primary,
-  },
-  actionButton: {
-    margin: theme.spacing(0.5),
-  },
-  deleteButton: {
-    backgroundColor: '#f44336',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#d32f2f',
-    },
-  },
-  editButton: {
-    backgroundColor: '#4CAF50', // Green
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#2E7D32', // Dark Green
-    },
+    flexWrap: 'wrap',
+    maxWidth: '300px',
   },
   packageChip: {
-    margin: theme.spacing(0.5),
+    margin: '2px',
     backgroundColor: '#e0f7fa',
+  },
+  inclusionChip: {
+    margin: '2px',
+    backgroundColor: '#e8f5e9',
   }
 }));
 
@@ -217,24 +119,30 @@ const ViewHotels = () => {
       try {
         const response = await axios.get('http://localhost:3001/hotel/get-hotels');
         
+        // Check if response.data exists and has the expected structure
         if (Array.isArray(response.data)) {
           setHotelData(response.data);
         } else if (response.data && Array.isArray(response.data.hotels)) {
+          // If the array is nested in a 'hotels' property
           setHotelData(response.data.hotels);
         } else if (response.data && Array.isArray(response.data.data)) {
+          // If the array is nested in a 'data' property
           setHotelData(response.data.data);
         } else {
+          // If nothing works, initialize as empty array
           console.error("Unexpected API response format:", response.data);
           setHotelData([]);
         }
       } catch (error) {
         console.error("There was an error fetching the hotel data!", error);
+        // Show error message with SweetAlert
         Swal.fire({
           title: 'Error!',
           text: 'Failed to load hotel data',
           icon: 'error',
           confirmButtonColor: '#d33',
         });
+        // Initialize as empty array on error
         setHotelData([]);
       }
     };
@@ -242,7 +150,18 @@ const ViewHotels = () => {
     fetchHotelData();
   }, []);
 
+  const handleUpdate = (hotelId) => {
+    console.log(`Update hotel with ID: ${hotelId}`);
+    navigate(`/update-hotel/${hotelId}`); // Navigate to the update page with the hotel ID
+  };
+
+  const handleViewPackages = (hotelId) => {
+    console.log(`View packages for hotel with ID: ${hotelId}`);
+    navigate(`/hotel-packages/${hotelId}`); // Navigate to the hotel packages page
+  };
+
   const handleDelete = async (id) => {
+    // First confirm deletion with SweetAlert
     const confirmResult = await Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -255,9 +174,11 @@ const ViewHotels = () => {
     
     if (confirmResult.isConfirmed) {
       try {
+        // If no bookings, proceed with deletion
         await axios.delete(`http://localhost:3001/hotel/delete-hotel/${id}`);
         setHotelData(hotelData.filter(hotel => hotel._id !== id));
         
+        // Show success message
         Swal.fire({
           title: 'Deleted!',
           text: 'Hotel has been deleted successfully.',
@@ -276,18 +197,13 @@ const ViewHotels = () => {
     }
   };
 
-  const handleUpdate = (hotelId) => {
-    console.log(`Update hotel with ID: ${hotelId}`);
-    navigate(`/update-hotel/${hotelId}`); // Navigate to the update page with the hotel ID
-  };
-
   const handleSearchQueryChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
   const handleCriteriaChange = (event) => {
     setSearchCriteria(event.target.value);
-    setSearchQuery("");
+    setSearchQuery(""); // Reset search query when criteria changes
   };
 
   const handleChangePage = (event, newPage) => {
@@ -298,24 +214,35 @@ const ViewHotels = () => {
     setExpandedRow(expandedRow === id ? null : id);
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
-
   const filteredHotels = hotelData.filter(hotel => {
     if (!searchQuery) return true;
+    
+    // Handle special case for star_rating which is a number
+    if (searchCriteria === 'star_rating') {
+      return hotel[searchCriteria] === parseInt(searchQuery);
+    }
+    
+    // Handle searching in hotel_packages array if that's the criteria
+    if (searchCriteria === 'hotel_packages') {
+      const packages = hotel.hotel_packages || [];
+      return packages.some(pkg => 
+        pkg.package_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        pkg.package_description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
     
     const field = hotel[searchCriteria]?.toString().toLowerCase();
     return field?.includes(searchQuery.toLowerCase());
   });
 
   const paginatedHotels = filteredHotels.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  // Format date to display in a readable format
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  };
 
   return (
     <Box>
@@ -329,7 +256,6 @@ const ViewHotels = () => {
             width="100%"
             display="flex"
             flexDirection="row"
-            marginBottom={3}
           >
             <Typography variant="h4" gutterBottom style={{ marginBottom: '20px', fontFamily: 'cursive', fontWeight: 'bold', color: 'purple', textAlign: 'center' }}>
               Hotels List
@@ -346,7 +272,12 @@ const ViewHotels = () => {
                   <MenuItem value="hotel_name">Hotel Name</MenuItem>
                   <MenuItem value="city">City</MenuItem>
                   <MenuItem value="address">Address</MenuItem>
+                  <MenuItem value="phone_number">Phone Number</MenuItem>
+                  <MenuItem value="email">Email</MenuItem>
+                  <MenuItem value="website">Website</MenuItem>
                   <MenuItem value="star_rating">Star Rating</MenuItem>
+                  <MenuItem value="description">Description</MenuItem>
+                  <MenuItem value="hotel_packages">Packages</MenuItem>
                 </Select>
               </FormControl>
               <TextField
@@ -361,283 +292,145 @@ const ViewHotels = () => {
           <TableContainer component={Paper} className={classes.tableContainer}>
             <Table>
               <TableHead>
-                <TableRow className={classes.tableHeadRow}>
-                  <TableCell className={classes.tableHeadCell}></TableCell>
-                  <TableCell className={classes.tableHeadCell}>Image</TableCell>
-                  <TableCell className={classes.tableHeadCell}>Hotel ID</TableCell>
-                  <TableCell className={classes.tableHeadCell}>Hotel Name</TableCell>
-                  <TableCell className={classes.tableHeadCell}>City</TableCell>
-                  <TableCell className={classes.tableHeadCell}>Star Rating</TableCell>
-                  <TableCell className={classes.tableHeadCell}>Packages</TableCell>
-                  <TableCell className={classes.tableHeadCell}>Actions</TableCell>
+                <TableRow style={{ backgroundColor: '#d4ac0d', color: 'white' }}>
+                  <TableCell style={{ color: 'white' }}></TableCell>
+                  <TableCell style={{ color: 'white' }}>Image</TableCell>
+                  <TableCell style={{ color: 'white' }}>Hotel ID</TableCell>
+                  <TableCell style={{ color: 'white' }}>Hotel Name</TableCell>
+                  <TableCell style={{ color: 'white' }}>City</TableCell>
+                  <TableCell style={{ color: 'white' }}>Phone</TableCell>
+                  <TableCell style={{ color: 'white' }}>Rating</TableCell>
+                  <TableCell style={{ color: 'white' }}>Packages</TableCell>
+                  <TableCell style={{ color: 'white' }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {paginatedHotels.map((hotel) => (
                   <React.Fragment key={hotel._id}>
-                    <TableRow className={classes.tableRow}>
+                    <TableRow>
                       <TableCell>
                         <IconButton 
                           size="small" 
                           onClick={() => handleExpandRow(hotel._id)}
-                          style={{ transform: expandedRow === hotel._id ? 'rotate(180deg)' : 'rotate(0deg)' }}
                         >
-                          <ExpandMoreIcon />
+                          {expandedRow === hotel._id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                         </IconButton>
                       </TableCell>
                       <TableCell>
-                        {hotel.hotel_image ? (
-                          <Avatar 
-                            className={classes.hotelAvatar} 
-                            src={hotel.hotel_image}
-                            alt={hotel.hotel_name}
-                            onError={(e) => {
-                              console.error("Error loading image");
-                              e.target.onerror = null; 
-                              e.target.src = ""; 
-                            }}
-                          />
-                        ) : (
-                          <Avatar className={classes.hotelAvatar}>
-                            {hotel.hotel_name ? hotel.hotel_name.charAt(0).toUpperCase() : 'H'}
-                          </Avatar>
-                        )}
+                        <Avatar 
+                          src={hotel.hotel_image} 
+                          alt={hotel.hotel_name}
+                          className={classes.hotelImage}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://via.placeholder.com/50?text=Hotel";
+                          }}
+                        />
                       </TableCell>
-                      <TableCell><strong>{hotel.hotel_id}</strong></TableCell>
-                      <TableCell><strong>{hotel.hotel_name}</strong></TableCell>
+                      <TableCell>{hotel.hotel_id}</TableCell>
+                      <TableCell>{hotel.hotel_name}</TableCell>
                       <TableCell>{hotel.city}</TableCell>
+                      <TableCell>{hotel.phone_number}</TableCell>
                       <TableCell>
                         <Rating 
-                          value={hotel.star_rating || 0} 
+                          value={hotel.star_rating} 
                           readOnly 
                           size="small"
                         />
                       </TableCell>
                       <TableCell>
-                        <Chip 
-                          label={hotel.hotel_packages?.length || 0} 
-                          size="small" 
-                          className={classes.packageChip}
-                        />
+                        <span className={classes.packageCount}>
+                          {hotel.hotel_packages?.length || 0}
+                        </span>
                       </TableCell>
                       <TableCell>
                         <Box display="flex" flexDirection="row" alignItems="center">
-                        <IconButton
-                            className={`${classes.actionButton} ${classes.editButton}`}
-                            size="small"
+                          <IconButton
+                            color="primary"
                             onClick={() => handleUpdate(hotel._id)}
                           >
-                            <EditIcon fontSize="small" />
+                            <EditIcon />
                           </IconButton>
-
                           <IconButton
-                            className={`${classes.actionButton} ${classes.deleteButton}`}
-                            size="small"
+                            color="secondary"
                             onClick={() => handleDelete(hotel._id)}
                           >
-                            <DeleteIcon fontSize="small" />
+                            <DeleteIcon />
                           </IconButton>
                         </Box>
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
                         <Collapse in={expandedRow === hotel._id} timeout="auto" unmountOnExit>
-                          <Box className={classes.detailsContainer}>
-                            <Box className={classes.userInfoFlex}>
-                              {hotel.hotel_image ? (
-                                <Avatar 
-                                  className={classes.hotelAvatarLarge} 
-                                  src={hotel.hotel_image}
-                                  alt={hotel.hotel_name}
-                                  onError={(e) => {
-                                    console.error("Error loading image");
-                                    e.target.onerror = null; 
-                                    e.target.src = ""; 
-                                  }}
-                                />
-                              ) : (
-                                <Avatar className={classes.hotelAvatarLarge}>
-                                  {hotel.hotel_name ? hotel.hotel_name.charAt(0).toUpperCase() : 'H'}
-                                </Avatar>
-                              )}
-                              <Box className={classes.hotelDetailsSection}>
-                                <Typography variant="h5" className={classes.hotelName}>
-                                  {hotel.hotel_name}
-                                </Typography>
-                                <Typography variant="body1" color="textSecondary">
-                                  {hotel.hotel_id}
-                                </Typography>
-                                <Box mt={1}>
-                                  <Rating 
-                                    value={hotel.star_rating || 0} 
-                                    readOnly 
-                                    size="small"
-                                  />
-                                </Box>
-                              </Box>
+                          <Box 
+                            className={classes.collapsible} 
+                            margin={2} 
+                            padding={2} 
+                            sx={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: 1 }}
+                          >
+                            <Box marginBottom={1.5}>
+                              <Typography 
+                                variant="body2" 
+                                gutterBottom 
+                                sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#1976d2' }}
+                              >
+                                Contact Information
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#424242' }}>
+                                <strong>Address:</strong> {hotel.address}<br />
+                                <strong>Email:</strong> {hotel.email}<br />
+                                <strong>Phone:</strong> {hotel.phone_number}<br />
+                                <strong>Website:</strong> <a href={hotel.website} target="_blank" rel="noopener noreferrer">{hotel.website}</a>
+                              </Typography>
                             </Box>
-                            
-                            <Grid container spacing={3}>
-                              {/* Location Information Card */}
-                              <Grid item xs={12} md={4}>
-                                <Card>
-                                  <CardHeader
-                                    className={`${classes.cardHeader} ${classes.cardHeaderLocation}`}
-                                    avatar={<LocationOnIcon className={classes.cardIcon} />}
-                                    title="Location Information"
-                                    titleTypographyProps={{ variant: 'subtitle1' }}
-                                    disableTypography={false}
-                                  />
-                                  <CardContent>
-                                    <Box className={classes.infoRow}>
-                                      <LocationOnIcon fontSize="small" />
-                                      <Typography className={classes.infoLabel}>City:</Typography>
-                                      <Typography className={classes.infoValue}>{hotel.city}</Typography>
-                                    </Box>
-                                    <Divider light />
-                                    <Box className={classes.infoRow}>
-                                      <RoomIcon fontSize="small" />
-                                      <Typography className={classes.infoLabel}>Address:</Typography>
-                                      <Typography className={classes.infoValue}>{hotel.address}</Typography>
-                                    </Box>
-                                  </CardContent>
-                                </Card>
-                              </Grid>
-                              
-                              {/* Contact Information Card */}
-                              <Grid item xs={12} md={4}>
-                                <Card>
-                                  <CardHeader
-                                    className={`${classes.cardHeader} ${classes.cardHeaderContact}`}
-                                    avatar={<PhoneIcon className={classes.cardIcon} />}
-                                    title="Contact Information"
-                                    titleTypographyProps={{ variant: 'subtitle1' }}
-                                    disableTypography={false}
-                                  />
-                                  <CardContent>
-                                    <Box className={classes.infoRow}>
-                                      <PhoneIcon fontSize="small" />
-                                      <Typography className={classes.infoLabel}>Phone:</Typography>
-                                      <Typography className={classes.infoValue}>{hotel.phone_number}</Typography>
-                                    </Box>
-                                    <Divider light />
-                                    <Divider light />
-                                    <Box className={classes.infoRow}>
-                                      <WebIcon fontSize="small" />
-                                      <Typography className={classes.infoLabel}>Website:</Typography>
-                                      <Typography className={classes.infoValue}>
-                                        <a 
-                                          href={hotel.website} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer"
-                                        >
-                                          {hotel.website}
-                                        </a>
-                                      </Typography>
-                                    </Box>
-                                  </CardContent>
-                                </Card>
-                              </Grid>
-                              
-                              {/* Rating Information Card */}
-                              <Grid item xs={12} md={4}>
-                                <Card>
-                                  <CardHeader
-                                    className={`${classes.cardHeader} ${classes.cardHeaderRating}`}
-                                    avatar={<StarIcon className={classes.cardIcon} />}
-                                    title="Rating Information"
-                                    titleTypographyProps={{ variant: 'subtitle1' }}
-                                    disableTypography={false}
-                                  />
-                                  <CardContent>
-                                    <Box className={classes.infoRow}>
-                                      <Typography className={classes.infoLabel}>Star Rating:</Typography>
-                                      <Rating 
-                                        value={hotel.star_rating || 0} 
-                                        readOnly 
-                                        size="small"
-                                      />
-                                    </Box>
-                                    <Divider light />
-                                    <Box className={classes.infoRow}>
-                                      <Typography className={classes.infoLabel}>Total Packages:</Typography>
-                                      <Typography className={classes.infoValue}>
-                                        {hotel.hotel_packages?.length || 0}
-                                      </Typography>
-                                    </Box>
-                                  </CardContent>
-                                </Card>
-                              </Grid>
 
-                              <Grid item xs={12} md={6}>
-                              <Card>
-                                <CardHeader
-                                  className={`${classes.cardHeader} ${classes.cardHeaderPackages}`}
-                                  avatar={<TravelExploreIcon className={classes.cardIcon} />}
-                                  title="Hotel Packages"
-                                  titleTypographyProps={{ variant: 'subtitle1' }}
-                                  disableTypography={false}
-                                />
-                                <CardContent>
-                                  {hotel.hotel_packages && hotel.hotel_packages.length > 0 ? (
-                                    <List className={classes.packageList}>
-                                      {hotel.hotel_packages.map((pkg, index) => (
-                                        <ListItem key={index} className={classes.packageListItem}>
-                                          <ListItemText
-                                            primary={
-                                              <Typography className={classes.packageName}>
-                                                {pkg.package_name}
-                                              </Typography>
-                                            }
-                                            secondary={
-                                              <>
-                                                <Typography variant="body2" color="textSecondary">
-                                                  Price: ${pkg.price}
-                                                </Typography>
-                                                <Typography variant="body2" color="textSecondary">
-                                                  Inclusions: {pkg.inclusions.join(', ')}
-                                                </Typography>
-                                                <Typography variant="body2" color="textSecondary">
-                                                  Validity: {new Date(pkg.validity_period).toLocaleDateString()}
-                                                </Typography>
-                                              </>
-                                            }
-                                          />
-                                        </ListItem>
-                                      ))}
-                                    </List>
-                                  ) : (
-                                    <Typography variant="body2" color="textSecondary">
-                                      No packages available
+                            <Box marginBottom={1.5}>
+                              <Typography 
+                                variant="body2" 
+                                gutterBottom 
+                                sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#1976d2' }}
+                              >
+                                Description
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#424242' }}>
+                                {hotel.description}
+                              </Typography>
+                            </Box>
+
+                            <Box marginBottom={1.5}>
+                              <Typography 
+                                variant="body2" 
+                                gutterBottom 
+                                sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#1976d2' }}
+                              >
+                                Available Packages
+                              </Typography>
+                              {hotel.hotel_packages && hotel.hotel_packages.length > 0 ? (
+                                hotel.hotel_packages.map((pkg, idx) => (
+                                  <Box key={idx} marginBottom={1} padding={1} sx={{ backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+                                    <Typography variant="body2" sx={{ fontWeight: 'bold', fontSize: '0.8rem', color: '#1976d2' }}>
+                                      {pkg.package_name} - ${pkg.price}
                                     </Typography>
-                                  )}
-                                </CardContent>
-                              </Card>
-                            </Grid>
-
-                                                  {/* Description Card */}
-                                                  <Grid item xs={12} md={6}>
-                              <Card>
-                                <CardHeader
-                                  className={`${classes.cardHeader} ${classes.cardHeaderDescription}`}
-                                  avatar={<DescriptionIcon className={classes.cardIcon} />}
-                                  title="Hotel Description"
-                                  titleTypographyProps={{ variant: 'subtitle1' }}
-                                  disableTypography={false}
-                                />
-                                <CardContent>
-                                  <Typography 
-                                    variant="body2" 
-                                    color="textPrimary" 
-                                    className={classes.descriptionText}
-                                  >
-                                    {hotel.description || 'No description available'}
-                                  </Typography>
-                                </CardContent>
-                              </Card>
-                            </Grid>
-                            </Grid>
+                                    <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#424242' }}>
+                                      {pkg.package_description}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#424242', marginTop: '4px' }}>
+                                      <strong>Valid until:</strong> {formatDate(pkg.validity_period)}
+                                    </Typography>
+                                    <Box className={classes.chipContainer} sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginTop: '4px' }}>
+                                      {pkg.inclusions?.map((inclusion, index) => (
+                                        <Chip key={index} label={inclusion} color="primary" variant="outlined" size="small" className={classes.inclusionChip} />
+                                      ))}
+                                    </Box>
+                                  </Box>
+                                ))
+                              ) : (
+                                <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#424242' }}>
+                                  No packages available for this hotel.
+                                </Typography>
+                              )}
+                            </Box>
                           </Box>
                         </Collapse>
                       </TableCell>

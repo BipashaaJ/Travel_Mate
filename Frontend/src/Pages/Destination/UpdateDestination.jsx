@@ -311,65 +311,40 @@ const UpdateDestination = () => {
                   style={{marginTop:'20px'}}
                   disabled // Disable editing destination ID for updates
                 />
-<TextField
-  fullWidth
-  margin="normal"
-  label="Destination Name"
-  variant="outlined"
-  value={destinationName}
-  onChange={(e) => {
-    // Allow only letters and spaces
-    const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
-    setDestinationName(value);
-    if (errors.destinationName) {
-      setErrors(prevErrors => ({ ...prevErrors, destinationName: '' }));
-    }
-  }}
-  // Prevent number input via keyboard
-  onKeyDown={(e) => {
-    if (/\d/.test(e.key)) {
-      e.preventDefault();
-    }
-  }}
-  // Set input pattern for validation
-  inputProps={{
-    pattern: "[A-Za-z ]*",
-    title: "Only letters and spaces are allowed"
-  }}
-  helperText={errors.destinationName}
-  error={!!errors.destinationName}
-  required
-/>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Destination Name"
+                  variant="outlined"
+                  value={destinationName}
+                  onChange={(e) => {
+                    setDestinationName(e.target.value);
+                    if (errors.destinationName) {
+                      setErrors(prevErrors => ({ ...prevErrors, destinationName: '' }));
+                    }
+                  }}
+                  helperText={errors.destinationName}
+                  error={!!errors.destinationName}
+                  required
+                />
 
-<TextField
-  fullWidth
-  margin="normal"
-  label="Location"
-  variant="outlined"
-  value={location}
-  onChange={(e) => {
-    // Allow only letters, spaces, commas, and hyphens
-    const value = e.target.value.replace(/[^A-Za-z\s,-]/g, '');
-    setLocation(value);
-    if (errors.location) {
-      setErrors(prevErrors => ({ ...prevErrors, location: '' }));
-    }
-  }}
-  // Prevent number input via keyboard
-  onKeyDown={(e) => {
-    if (/\d/.test(e.key)) {
-      e.preventDefault();
-    }
-  }}
-  // Set input pattern for validation
-  inputProps={{
-    pattern: "[A-Za-z ,-]*",
-    title: "Only letters, spaces, commas and hyphens are allowed"
-  }}
-  helperText={errors.location}
-  error={!!errors.location}
-  required
-/>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Location"
+                  variant="outlined"
+                  value={location}
+                  onChange={(e) => {
+                    setLocation(e.target.value);
+                    if (errors.location) {
+                      setErrors(prevErrors => ({ ...prevErrors, location: '' }));
+                    }
+                  }}
+                  helperText={errors.location}
+                  error={!!errors.location}
+                  required
+                />
+
                 <TextField
                   fullWidth
                   margin="normal"

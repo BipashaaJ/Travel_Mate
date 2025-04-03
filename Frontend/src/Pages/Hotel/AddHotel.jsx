@@ -25,18 +25,6 @@ const AddHotel = () => {
   const [useImageUrl, setUseImageUrl] = useState(true);
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
-  const [emailTouched, setEmailTouched] = useState(false);
-  const [showEmailError, setShowEmailError] = useState(false);
-
-
-
-  // Handle email blur (when field loses focus)
-  const handleEmailBlur = () => {
-    if (email && !validateEmail(email)) {
-      setShowEmailError(true);
-      setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }));
-    }
-  };
 
   // Package details
   const [packages, setPackages] = useState([]);
@@ -197,21 +185,6 @@ const handleImageUpload = async (event) => {
     });
   };
 
-  const handleEmailChange = (e) => {
-    const value = e.target.value;
-    setEmail(value);
-    setEmailTouched(true);
-    
-    // Show error only after user has typed something
-    if (value && !validateEmail(value)) {
-      setShowEmailError(true);
-      setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }));
-    } else {
-      setShowEmailError(false);
-      setErrors(prev => ({ ...prev, email: '' }));
-    }
-  };
-
   const handleAddPackage = () => {
     // Ensure validity_period is a valid date
     let updatedPackage = { ...currentPackage };
@@ -343,7 +316,6 @@ const handleImageUpload = async (event) => {
       }
     }
   };
-  
 
 // The StarRatingComponent remains the same, now the handler will correctly process the ratingValue
 const StarRatingComponent = () => {
@@ -384,24 +356,9 @@ const StarRatingComponent = () => {
     "Batticaloa", "Tangalle", "Unawatuna", "Matara", "Habarana"
   ];
 
-  useEffect(() => {
-    // Generate hotel ID when component mounts
-    generateHotelId();
-  }, []);
-  
-  const generateHotelId = () => {
-    // Generate a random 6-character alphanumeric ID
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = 'HOT-';
-    for (let i = 0; i < 6; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    setHotelId(result);
-  };
-
   return (
     <Box>
-      <Box display="flex" style={{ backgroundColor: '#f5f5f5'}}>
+      <Box display="flex">
         <Sidebar />
         <Box
           flexDirection="column"
@@ -431,27 +388,24 @@ const StarRatingComponent = () => {
                 
                 {/* Hotel Details Form Fields */}
                 <Grid container spacing={2}>
-                <Grid item xs={12}>
-  <Box display="flex" alignItems="center">
-    <TextField
-      fullWidth
-      margin="normal"
-      label="Hotel ID"
-      variant="outlined"
-      value={hotelId}
-      onChange={(e) => {
-        setHotelId(e.target.value);
-        if (errors.hotelId) {
-          setErrors(prevErrors => ({ ...prevErrors, hotelId: '' }));
-        }
-      }}
-      helperText={errors.hotelId}
-      error={!!errors.hotelId}
-      required
-      disabled
-    />
-  </Box>
-</Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      margin="normal"
+                      label="Hotel ID"
+                      variant="outlined"
+                      value={hotelId}
+                      onChange={(e) => {
+                        setHotelId(e.target.value);
+                        if (errors.hotelId) {
+                          setErrors(prevErrors => ({ ...prevErrors, hotelId: '' }));
+                        }
+                      }}
+                      helperText={errors.hotelId}
+                      error={!!errors.hotelId}
+                      required
+                    />
+                  </Grid>
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
@@ -527,11 +481,6 @@ const StarRatingComponent = () => {
                               setErrors(prevErrors => ({ ...prevErrors, phoneNumber: '' }));
                             }
                           }}
-                          inputProps={{
-                            maxLength: 10,
-                            inputMode: 'numeric',
-                            pattern: '[0-9]*'
-                          }}
                           helperText={errors.phoneNumber}
                           error={!!errors.phoneNumber}
                           required
@@ -556,24 +505,24 @@ const StarRatingComponent = () => {
                         />
                       </Grid>
                       <Grid item xs={12}>
-      <TextField
-        fullWidth
-        margin="normal"
-        label="Email"
-        variant="outlined"
-        type="email"
-        value={email}
-        onChange={handleEmailChange}
-        onBlur={handleEmailBlur}
-        helperText={
-          showEmailError ? 
-            "Please enter a valid email (e.g., example@domain.com)" : 
-            "e.g., contact@hotel.com"
-        }
-        error={showEmailError}
-        required
-      />
-    </Grid>
+                        <TextField
+                          fullWidth
+                          margin="normal"
+                          label="Email"
+                          variant="outlined"
+                          type="email"
+                          value={email}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (errors.email) {
+                              setErrors(prevErrors => ({ ...prevErrors, email: '' }));
+                            }
+                          }}
+                          helperText={errors.email}
+                          error={!!errors.email}
+                          required
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
                   

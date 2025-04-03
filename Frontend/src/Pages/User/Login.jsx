@@ -58,21 +58,6 @@ const Login = () => {
       return;
     }
   
-    // Check if admin credentials are entered
-    if (email === "admin@gmail.com" && password === "admin") {
-      localStorage.setItem("username", "Admin");
-      localStorage.setItem("userEmail", email);
-      
-      // Dispatch login event
-      window.dispatchEvent(new CustomEvent('loginUpdate', {
-        detail: { username: "Admin", email }
-      }));
-      
-      swal("Success", "Logged in as Admin!", "success");
-      navigate("/dashboard");
-      return;
-    }
-  
     try {
       const response = await axios.post('http://localhost:3001/user/login', {
         email,
@@ -82,21 +67,14 @@ const Login = () => {
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         if (response.data.user) {
-          console.log(response.data.user);
           const fullName = response.data.user.full_name || '';
-          const firstName = fullName.split(' ')[0];
+          const firstName = fullName.split(' ')[0]; // Get the first name
           localStorage.setItem('username', firstName);
           localStorage.setItem('userEmail', response.data.user.email || '');
-          localStorage.setItem('userId', response.data.user.id || '');
-          
-          // Dispatch login event
-          window.dispatchEvent(new CustomEvent('loginUpdate', {
-            detail: { username: firstName, email: response.data.user.email }
-          }));
+          localStorage.setItem('userId', response.data.user._id || '');
         }
-        
         swal("Success", "Logged in successfully!", "success");
-        navigate('/');
+        navigate('/dashboard');
   
         // Set timeout to clear local storage after 1 hour
         setTimeout(() => {
@@ -104,12 +82,9 @@ const Login = () => {
           localStorage.removeItem('username');
           localStorage.removeItem('userEmail');
           localStorage.removeItem('userId');
-          window.dispatchEvent(new CustomEvent('loginUpdate', {
-            detail: { username: 'User', email: '' }
-          }));
           swal("Session Expired", "Please login again.", "warning");
           navigate('/login');
-        }, 3600000);
+        }, 3600000); // 1 hour in milliseconds
       }
     } catch (error) {
       console.error(error);
@@ -120,13 +95,11 @@ const Login = () => {
       }
     }
   };
-  
-  
 
   return (
     <Box
       style={{
-        backgroundImage: 'url(https://img.freepik.com/free-photo/landscape-morning-fog-mountains-with-hot-air-balloons-sunrise_335224-794.jpg?t=st=1743081705~exp=1743085305~hmac=da43631b8b0992811f94eed06c55d9281676305de45708cb132c48a116780e59&w=996)',
+        backgroundImage: 'url(https://images.unsplash.com/photo-1500835556837-99ac94a94552?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
