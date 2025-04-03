@@ -12,6 +12,11 @@ const UserRoutes = require("./routes/userRoute");
 const HotelRoutes = require("./routes/hotelRoute");
 const DestinationRoutes = require("./routes/destinationRoute");
 
+//tourpakcage
+const routes = require("./routes/packages")
+const bookingRoutes = require("./routes/PackageBookings");
+
+
 const app = express();
 
 app.use(cors()); // Enable CORS
@@ -28,6 +33,10 @@ db_connection();
 app.use("/user", UserRoutes);  
 app.use("/hotel", HotelRoutes);  
 app.use("/destination", DestinationRoutes);  
+//touepackage  
+app.use("/api/package",routes);
+app.use("/api/book", bookingRoutes);
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
