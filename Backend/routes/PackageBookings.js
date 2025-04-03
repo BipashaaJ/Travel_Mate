@@ -1,5 +1,3 @@
-// backend/routes/PackageBookings.js
-
 const express = require("express");
 const PackageBooking = require("../models/PackageBooking"); // Ensure correct casing
 const sendMail = require("../utils/sendMail");
@@ -8,6 +6,8 @@ const router = express.Router();
 // POST route to save a new booking
 router.post("/", async (req, res) => {
   const bookingDetails = req.body;
+
+  // Check if required fields are missing
   if (
     !bookingDetails.customerName ||
     !bookingDetails.email ||
@@ -15,44 +15,52 @@ router.post("/", async (req, res) => {
     !bookingDetails.numberOfPeople ||
     !bookingDetails.address ||
     bookingDetails.totalPrice === undefined ||
-    !bookingDetails.cardName
+    !bookingDetails.cardName ||
+    !bookingDetails.startDate // Add this field if it's required
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   try {
+    // Create a new booking
     const newBooking = new PackageBooking(bookingDetails);
+
+    // Save the booking
     await newBooking.save();
 
+    // Respond with success
     res
       .status(201)
       .json({ message: "Booking saved successfully", booking: newBooking });
 
+    // Send a confirmation email
     const htmlContent = `
     <html>
         <body>
         <h2>Your package has been created successfully!</h2>
         <p>
-            <strong>Customer Name:</strong> ${req.body.customerName}<br>
-            <strong>Your Number:</strong> ${req.body.contactNumber}<br>
-            <strong>Email:</strong> ${req.body.email}<br>
-            <strong>No of People:</strong> ${req.body.numberOfPeople}<br>
-            <strong>Start Date:</strong> ${req.body.startDate}<br>
-            <strong>Price:</strong> ${req.body.totalPrice}<br>
+            <strong>Customer Name:</strong> ${bookingDetails.customerName}<br>
+            <strong>Your Number:</strong> ${bookingDetails.contactNumber}<br>
+            <strong>Email:</strong> ${bookingDetails.email}<br>
+            <strong>No of People:</strong> ${bookingDetails.numberOfPeople}<br>
+            <strong>Start Date:</strong> ${bookingDetails.startDate}<br>
+            <strong>Price:</strong> ${bookingDetails.totalPrice}<br>
         </p>
         <p>Thank you for choosing our service!</p>
         </body>
     </html>
     `;
 
+    // Send the email using a utility function (ensure it's properly defined)
     sendMail({
-      to: req.body.email,
+      to: bookingDetails.email,
       subject: "Package Created",
-      text: `${req.body.packageName} package has been created successfully.`,
+      text: `${bookingDetails.packageName} package has been created successfully.`,
       html: htmlContent,
     });
-    
+
   } catch (error) {
+    // Log the error and return a message
     console.error("Error saving booking:", error.message);
     res
       .status(500)
@@ -149,23 +157,6 @@ router.delete("/:id", async (req, res) => {
     res
       .status(500)
       .json({ message: "Error deleting booking", error: error.message });
-  }
-});
-
-router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const updatedBooking = req.body;
-
-  try {
-    const booking = await PackageBooking.findByIdAndUpdate(id, updatedBooking, {
-      new: true,
-    });
-    if (!booking) {
-      return res.status(404).send({ message: "Booking not found" });
-    }
-    res.send(booking);
-  } catch (error) {
-    res.status(500).send({ message: "Error updating booking", error });
   }
 });
 

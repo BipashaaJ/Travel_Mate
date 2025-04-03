@@ -1,4 +1,3 @@
-// Bill.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Bill.css';
@@ -6,14 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios';
 
-
 const Bill = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
     const { formData, packagePrice: basePrice } = location.state || {};
-
-    
 
     const [customerDetails, setCustomerDetails] = useState({
         customerName: formData?.customerName || '',
@@ -76,7 +72,28 @@ const Bill = () => {
     };
 
     const handlePay = async () => {
+        // Check if all fields are filled
+        if (
+            !customerDetails.customerName ||
+            !customerDetails.email ||
+            !customerDetails.contactNumber ||
+            !customerDetails.numberOfPeople ||
+            !customerDetails.address ||
+            !customerDetails.startDate ||
+            !updatedTotalPrice
+        ) {
+            alert('All fields are required');
+            return; // Prevent sending the request if any field is missing
+        }
+    
+        // Ensure `totalPrice` is defined and a valid number
+        if (isNaN(updatedTotalPrice) || updatedTotalPrice <= 0) {
+            alert('Total price is invalid');
+            return;
+        }
+    
         try {
+            // Send the request to the backend
             const response = await axios.post('http://localhost:3001/api/book', {
                 customerName: customerDetails.customerName,
                 email: customerDetails.email,
@@ -84,18 +101,18 @@ const Bill = () => {
                 numberOfPeople: customerDetails.numberOfPeople,
                 address: customerDetails.address,
                 totalPrice: updatedTotalPrice,
-                cardName: formData?.cardName || 'Unknown', // Ensure cardName is defined
                 startDate: customerDetails.startDate,
+                cardName: 'John Doe', // Make sure you add a valid card name or other fields as required by your model
             });
-
-
-            alert(response.data.message);
-            navigate('/packages'); // Navigate to the FrontPage after successful payment
+    
+            alert(response.data.message); // Show the success message from the server
+            navigate('/hotel-management'); // Navigate to the hotel-management page
         } catch (error) {
             const message = error.response?.data?.message || error.message;
-            alert('Error saving booking: ' + message);
+            alert('Error saving booking: ' + message); // Display error if the request fails
         }
     };
+    
 
     const handleDelete = () => {
         const confirmDelete = window.confirm('Are you sure you want to delete this booking?');
@@ -172,7 +189,6 @@ const Bill = () => {
                         <FontAwesomeIcon icon={faEdit} /> {isEditing ? 'Done' : 'Edit'}
                     </button>
                     <button className="pay-button" onClick={handlePay}>Save</button>
-                    
                 </div>
             </div>
         </div>
