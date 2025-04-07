@@ -1,3 +1,4 @@
+#genarate report AI part
 import joblib
 import numpy as np
 import pandas as pd
@@ -30,3 +31,7 @@ model.fit(np.arange(len(X)).reshape(-1, 1), y)
 # Save Model
 joblib.dump(model, 'packing_model.pkl')
 print("Model Saved Successfully!")
+
+
+
+
