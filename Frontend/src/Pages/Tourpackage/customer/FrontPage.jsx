@@ -2,19 +2,16 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './FrontPage.css';
 
-
-
-const FrontPage = () => {  // Update the function name to use PascalCase (best practice for components)
+const FrontPage = () => {
   const navigate = useNavigate();
 
   const handleViewPackages = () => {
-    // Navigate to the DisplayPackage page
     navigate('/packages');
   };
 
   return (
-    <div>
-      <div className="section about-us">
+    <div className="front-body">
+      <div className="front-section front-about-us">
         <img
           alt="Beach with palm trees"
           height="600"
@@ -23,9 +20,9 @@ const FrontPage = () => {  // Update the function name to use PascalCase (best p
         />
         <h1>Travel Lanka</h1>
       </div>
-      <div className="section promotion">
+      <div className="front-section front-promotion">
         <h1>We Provide You Best Sri Lanka Tours</h1>
-        <div className="image-container">
+        <div className="front-image-container">
           <img
             alt="Scenic view of Sri Lanka"
             height="200"
@@ -34,11 +31,11 @@ const FrontPage = () => {  // Update the function name to use PascalCase (best p
           />
         </div>
         <br />
-        <button className="button" onClick={handleViewPackages}>
+        <button className="front-button" onClick={handleViewPackages}>
           View Packages
         </button>
       </div>
-      <div className="section sri-lanka">
+      <div className="front-section front-sri-lanka">
         <img
           alt="Cityscape of Sri Lanka"
           height="600"
