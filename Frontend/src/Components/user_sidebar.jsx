@@ -105,18 +105,30 @@ const UserSidebar = () => {
             View Users
           </MenuItem>
         </Link>
+<<<<<<< Updated upstream
         <Link to="/add-user" style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem>
             <Icon><FaUserPlus /></Icon>
             Add User
           </MenuItem>
         </Link>
+=======
+>>>>>>> Stashed changes
         <Link to="/user-report" style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem>
             <Icon><FaFileAlt /></Icon>
             User Report
           </MenuItem>
         </Link>
+<<<<<<< Updated upstream
+=======
+        <Link to="/view-reviews" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem>
+            <Icon><FaFileAlt /></Icon>
+            User Reviews
+          </MenuItem>
+        </Link>
+>>>>>>> Stashed changes
       </Menu>
       <SignOutContainer>
         <Link to="/logout" style={{ textDecoration: 'none', color: 'inherit' }}>

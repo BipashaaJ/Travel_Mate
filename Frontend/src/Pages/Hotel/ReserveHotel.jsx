@@ -18,7 +18,13 @@ import {
   LocalParking,
   FitnessCenter,
   RoomService,
+<<<<<<< Updated upstream
   ExpandMore
+=======
+  ExpandMore,
+  Edit,
+  Delete
+>>>>>>> Stashed changes
 } from '@material-ui/icons';
 import { 
   Container,
@@ -48,12 +54,26 @@ import {
   AccordionSummary,
   AccordionDetails,
   CircularProgress,
+<<<<<<< Updated upstream
   Snackbar
+=======
+  Snackbar,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+>>>>>>> Stashed changes
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Rating from '@material-ui/lab/Rating';
 import { useParams } from 'react-router-dom';
 import MuiAlert from '@material-ui/lab/Alert';
+<<<<<<< Updated upstream
+=======
+import HotelReviews from '../Review/HotelReviews';
+import { useNavigate } from 'react-router-dom';
+>>>>>>> Stashed changes
 
 const useStyles = makeStyles((theme) => ({
   rating: {
@@ -85,6 +105,29 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     height: '80vh'
+<<<<<<< Updated upstream
+=======
+  },
+  reviewActions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginTop: theme.spacing(1)
+  },
+  reviewItem: {
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      boxShadow: theme.shadows[3]
+    }
+  },
+  hotelHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: theme.spacing(2)
+  },
+  contactAvatar: {
+    marginBottom: theme.spacing(0.5)
+>>>>>>> Stashed changes
   }
 }));
 
@@ -99,13 +142,26 @@ const HotelReservationPage = () => {
   const [review, setReview] = useState({
     name: '',
     rating: 5,
+<<<<<<< Updated upstream
     comment: ''
+=======
+    comment: '',
+    review_id: null
+>>>>>>> Stashed changes
   });
   const [reviews, setReviews] = useState([]);
   const [expanded, setExpanded] = useState('panel1');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+<<<<<<< Updated upstream
+=======
+  const [successMessage, setSuccessMessage] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [reviewToDelete, setReviewToDelete] = useState(null);
+  const navigate = useNavigate();
+>>>>>>> Stashed changes
 
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -116,6 +172,7 @@ const HotelReservationPage = () => {
       return;
     }
     setSnackbarOpen(false);
+<<<<<<< Updated upstream
   };
 
 // Fetch hotel data from API
@@ -143,6 +200,28 @@ useEffect(() => {
         setReview(prev => ({ ...prev, name: user }));
       }
 
+=======
+    setSuccessMessage('');
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch hotel data
+        const hotelResponse = await fetch(`http://localhost:3001/hotel/hotels/${id}`);
+        if (!hotelResponse.ok) throw new Error('Failed to fetch hotel data');
+        const hotelData = await hotelResponse.json();
+        setHotel(hotelData.hotel || hotelData);
+        
+        // Get current user from localStorage
+        const user = localStorage.getItem('username');
+        if (user) {
+          setCurrentUser(user);
+        }
+  
+>>>>>>> Stashed changes
       } catch (err) {
         setError(err.message);
         setSnackbarOpen(true);
@@ -151,12 +230,17 @@ useEffect(() => {
       }
     };
   
+<<<<<<< Updated upstream
     fetchHotelData();
+=======
+    fetchData();
+>>>>>>> Stashed changes
   }, [id]);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     try {
+<<<<<<< Updated upstream
       const newReview = {
         ...review,
         date: new Date(),
@@ -179,6 +263,106 @@ useEffect(() => {
     } catch (err) {
       setError('Failed to submit review');
       setSnackbarOpen(true);
+=======
+      // Prepare review data
+      const reviewData = {
+        hotel_id: id,
+        user_name: review.name,
+        rating: review.rating,
+        review_text: review.comment
+      };
+
+      let response, endpoint, method;
+      
+      if (review.review_id) {
+        // Update existing review
+        endpoint = `http://localhost:3001/reviews/${review.review_id}`;
+        method = 'PUT';
+      } else {
+        // Create new review
+        endpoint = `http://localhost:3001/review/reviews`;
+        method = 'POST';
+      }
+
+      response = await fetch(endpoint, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reviewData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || response.statusText);
+      }
+      
+      const data = await response.json();
+      
+      // Update local state
+      if (review.review_id) {
+        setReviews(reviews.map(r => 
+          r.review_id === review.review_id ? data.review : r
+        ));
+        setSuccessMessage('Review updated successfully!');
+      } else {
+        setReviews([...reviews, data.review]);
+        setSuccessMessage('Review submitted successfully!');
+      }
+      
+      // Reset form
+      setReview({ 
+        name: currentUser || '', 
+        rating: 5, 
+        comment: '',
+        review_id: null
+      });
+      
+      setSnackbarOpen(true);
+    } catch (err) {
+      setError(err.message || 'Failed to submit review');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleEditReview = (reviewToEdit) => {
+    setReview({
+      name: reviewToEdit.user_name,
+      rating: reviewToEdit.rating,
+      comment: reviewToEdit.review_text,
+      review_id: reviewToEdit.review_id
+    });
+    
+    // Scroll to review form
+    document.getElementById('review-form').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleDeleteClick = (reviewId) => {
+    setReviewToDelete(reviewId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteReview = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/reviews/${reviewToDelete}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete review');
+      }
+      
+      setReviews(reviews.filter(r => r.review_id !== reviewToDelete));
+      setSuccessMessage('Review deleted successfully!');
+      setSnackbarOpen(true);
+    } catch (err) {
+      setError(err.message || 'Failed to delete review');
+      setSnackbarOpen(true);
+    } finally {
+      setDeleteDialogOpen(false);
+      setReviewToDelete(null);
+>>>>>>> Stashed changes
     }
   };
 
@@ -198,14 +382,30 @@ useEffect(() => {
     );
   }
 
+<<<<<<< Updated upstream
   return (
     <Container maxWidth="lg" style={{ padding: '32px 0' }}>
       {/* Error Snackbar */}
+=======
+  const handleBookNow = (pkg) => {
+    navigate('/booking', { 
+      state: { 
+        packageData: pkg,
+        hotelData: hotel
+      }
+    });
+  };
+
+  return (
+    <Container maxWidth="lg" style={{ padding: '32px 0' }}>
+      {/* Error/Success Snackbar */}
+>>>>>>> Stashed changes
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
+<<<<<<< Updated upstream
         <Alert onClose={handleSnackbarClose} severity="error">
           {error}
         </Alert>
@@ -213,6 +413,39 @@ useEffect(() => {
 
       {/* Hotel Header Section */}
       <Card style={{ marginBottom: 32, overflow: 'hidden', height:'100vh' }}>
+=======
+        <Alert 
+          onClose={handleSnackbarClose} 
+          severity={error ? 'error' : 'success'}
+        >
+          {error || successMessage}
+        </Alert>
+      </Snackbar>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Delete Review</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this review? This action cannot be undone.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteReview} color="secondary" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Hotel Header Section */}
+      <Card style={{ marginBottom: 32, overflow: 'hidden', height: '100vh' }}>
+>>>>>>> Stashed changes
         <Grid container>
           {/* Hotel Image */}
           <Grid item xs={12} md={6}>
@@ -227,8 +460,13 @@ useEffect(() => {
           {/* Hotel Details */}
           <Grid item xs={12} md={6}>
             <CardContent style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+<<<<<<< Updated upstream
               <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h4" component="h1" style={{ fontWeight: 'bold', marginBottom:'20px', textAlign:'justify' }}>
+=======
+              <Box className={classes.hotelHeader}>
+                <Typography variant="h4" component="h1" style={{ fontWeight: 'bold' }}>
+>>>>>>> Stashed changes
                   {hotel.hotel_name}
                 </Typography>
                 <Box style={{ display: 'flex', alignItems: 'center' }}>
@@ -254,7 +492,11 @@ useEffect(() => {
                 <List dense>
                   <ListItem>
                     <ListItemAvatar>
+<<<<<<< Updated upstream
                       <Avatar style={{ backgroundColor: '#1976d2', marginBottom:'5px' }}>
+=======
+                      <Avatar style={{ backgroundColor: '#1976d2' }} className={classes.contactAvatar}>
+>>>>>>> Stashed changes
                         <LocationOn />
                       </Avatar>
                     </ListItemAvatar>
@@ -265,7 +507,11 @@ useEffect(() => {
                   </ListItem>
                   <ListItem>
                     <ListItemAvatar>
+<<<<<<< Updated upstream
                       <Avatar style={{ backgroundColor: '#4caf50', marginBottom:'5px'  }}>
+=======
+                      <Avatar style={{ backgroundColor: '#4caf50' }} className={classes.contactAvatar}>
+>>>>>>> Stashed changes
                         <Phone />
                       </Avatar>
                     </ListItemAvatar>
@@ -273,7 +519,11 @@ useEffect(() => {
                   </ListItem>
                   <ListItem>
                     <ListItemAvatar>
+<<<<<<< Updated upstream
                       <Avatar style={{ backgroundColor: '#f44336', marginBottom:'5px'  }}>
+=======
+                      <Avatar style={{ backgroundColor: '#f44336' }} className={classes.contactAvatar}>
+>>>>>>> Stashed changes
                         <Email />
                       </Avatar>
                     </ListItemAvatar>
@@ -281,7 +531,11 @@ useEffect(() => {
                   </ListItem>
                   <ListItem>
                     <ListItemAvatar>
+<<<<<<< Updated upstream
                       <Avatar style={{ backgroundColor: '#2196f3', marginBottom:'5px'  }}>
+=======
+                      <Avatar style={{ backgroundColor: '#2196f3' }} className={classes.contactAvatar}>
+>>>>>>> Stashed changes
                         <Language />
                       </Avatar>
                     </ListItemAvatar>
@@ -302,6 +556,7 @@ useEffect(() => {
               </Box>
               
               <Divider style={{ margin: '16px 0' }} />
+<<<<<<< Updated upstream
               
               <Box>
                 <Typography variant="h6" gutterBottom>Facilities & Amenities</Typography>
@@ -333,6 +588,8 @@ useEffect(() => {
                   />
                 </Box>
               </Box>
+=======
+>>>>>>> Stashed changes
             </CardContent>
           </Grid>
         </Grid>
@@ -350,6 +607,7 @@ useEffect(() => {
           </AccordionSummary>
           <AccordionDetails>
             {hotel.hotel_packages && hotel.hotel_packages.length > 0 ? (
+<<<<<<< Updated upstream
               <TableContainer component={Paper}>
                 <Table style={{ minWidth: 650 }} aria-label="hotel packages table">
                   <TableHead className={classes.packageTableHead}>
@@ -360,6 +618,68 @@ useEffect(() => {
                       <TableCell style={{ fontWeight: 'bold' }}>Inclusions</TableCell>
                       <TableCell align="center" style={{ fontWeight: 'bold' }}>Validity</TableCell>
                       <TableCell align="center" style={{ fontWeight: 'bold' }}>Action</TableCell>
+=======
+              <TableContainer 
+                component={Paper}
+                style={{ 
+                  borderRadius: 12,
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                  overflow: 'hidden'
+                }}
+              >
+                <Table style={{ minWidth: 800 }} aria-label="hotel packages table">
+                  <TableHead 
+                    className={classes.packageTableHead}
+                    style={{ backgroundColor: '#E4D00A'}}
+                  >
+                    <TableRow>
+                      <TableCell style={{ 
+                        fontWeight: 'bold', 
+                        width: '15%',
+                        fontSize: '0.875rem',
+                        color: '#3a3a3a'
+                      }}>Package</TableCell>
+                      <TableCell style={{ 
+                        fontWeight: 'bold', 
+                        width: '25%',
+                        fontSize: '0.875rem',
+                        color: '#3a3a3a'
+                      }}>Description</TableCell>
+                      <TableCell style={{ 
+                        fontWeight: 'bold', 
+                        width: '8%',
+                        fontSize: '0.875rem',
+                        color: '#3a3a3a',
+                        textAlign: 'center'
+                      }}>Rooms</TableCell>
+                      <TableCell style={{ 
+                        fontWeight: 'bold', 
+                        width: '15%',
+                        fontSize: '0.875rem',
+                        color: '#3a3a3a',
+                        textAlign: 'center'
+                      }}>Price</TableCell>
+                      <TableCell style={{ 
+                        fontWeight: 'bold', 
+                        width: '20%',
+                        fontSize: '0.875rem',
+                        color: '#3a3a3a'
+                      }}>Inclusions</TableCell>
+                      <TableCell style={{ 
+                        fontWeight: 'bold', 
+                        width: '10%',
+                        fontSize: '0.875rem',
+                        color: '#3a3a3a',
+                        textAlign: 'center'
+                      }}>Validity</TableCell>
+                      <TableCell style={{ 
+                        fontWeight: 'bold', 
+                        width: '7%',
+                        fontSize: '0.875rem',
+                        color: '#3a3a3a',
+                        textAlign: 'center'
+                      }}>Action</TableCell>
+>>>>>>> Stashed changes
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -367,6 +687,7 @@ useEffect(() => {
                       <TableRow
                         key={index}
                         hover
+<<<<<<< Updated upstream
                         style={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
                         <TableCell component="th" scope="row" style={{ fontWeight: 500 }}>
@@ -390,24 +711,173 @@ useEffect(() => {
                                   <CheckCircle color="primary" fontSize="small" />
                                 </ListItemAvatar>
                                 <ListItemText primary={inc} />
+=======
+                        style={{ 
+                          '&:last-child td, &:last-child th': { border: 0 },
+                          backgroundColor: index % 2 === 0 ? '#ffffff' : '#f9fafc'
+                        }}
+                      >
+                        <TableCell 
+                          component="th" 
+                          scope="row" 
+                          style={{ 
+                            fontWeight: 600,
+                            color: '#2c3e50',
+                            fontSize: '0.875rem'
+                          }}
+                        >
+                          {pkg.package_name}
+                        </TableCell>
+                        <TableCell style={{ color: '#6b7280' }}>
+                          <Typography 
+                            style={{ 
+                              maxWidth: '300px',
+                              fontSize: '0.875rem',
+                              lineHeight: '1.4'
+                            }}
+                          >
+                            {pkg.package_description}
+                          </Typography>
+                        </TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>
+                          <Typography 
+                            variant="body1" 
+                            style={{ 
+                              fontWeight: 'bold',
+                              color: '#3b82f6',
+                              fontSize: '1.5rem'
+                            }}
+                          >
+                            {pkg.no_of_rooms}
+                          </Typography>
+                        </TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>
+                          <Box style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            flexDirection: 'column'
+                          }}>
+                            <Typography 
+                              variant="body1" 
+                              style={{ 
+                                fontWeight: 'bold',
+                                color: '#10b981',
+                                fontSize: '1.5rem',
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}
+                            >
+                              <span style={{ 
+                                fontSize: '0.9rem',
+                                marginRight: 4,
+                                color: '#6b7280'
+                              }}>Rs</span>
+                              {pkg.price.toLocaleString()}
+                            </Typography>
+                            <Typography 
+                              variant="caption" 
+                              style={{ 
+                                color: '#9ca3af',
+                                fontSize: '0.7rem'
+                              }}
+                            >
+                              per night
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          <List dense disablePadding>
+                            {pkg.inclusions.map((inc, i) => (
+                              <ListItem 
+                                key={i} 
+                                disableGutters
+                                style={{ padding: '4px 0' }}
+                              >
+                                <ListItemAvatar style={{ minWidth: 28 }}>
+                                  <CheckCircle 
+                                    style={{ 
+                                      color: '#10b981',
+                                      fontSize: '1rem'
+                                    }} 
+                                  />
+                                </ListItemAvatar>
+                                <ListItemText 
+                                  primary={
+                                    <Typography 
+                                      style={{ 
+                                        fontSize: '0.875rem',
+                                        color: '#4b5563'
+                                      }}
+                                    >
+                                      {inc}
+                                    </Typography>
+                                  } 
+                                />
+>>>>>>> Stashed changes
                               </ListItem>
                             ))}
                           </List>
                         </TableCell>
+<<<<<<< Updated upstream
                         <TableCell align="center">
                           <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Event color="action" style={{ marginRight: 8 }} />
                             <Typography variant="body2">
+=======
+                        <TableCell style={{ textAlign: 'center' }}>
+                          <Box style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            flexDirection: 'column'
+                          }}>
+                            <Event 
+                              style={{ 
+                                color: '#8b5cf6',
+                                fontSize: '1.5rem',
+                                marginBottom: 4
+                              }} 
+                            />
+                            <Typography 
+                              variant="body2"
+                              style={{ 
+                                fontSize: '1rem',
+                                color: '#6b7280'
+                              }}
+                            >
+>>>>>>> Stashed changes
                               {new Date(pkg.validity_period).toLocaleDateString()}
                             </Typography>
                           </Box>
                         </TableCell>
+<<<<<<< Updated upstream
                         <TableCell align="center">
                           <Button 
                             variant="contained" 
                             color="primary"
                             size="small"
                             className={classes.submitButton}
+=======
+                        <TableCell style={{ textAlign: 'center' }}>
+                          <Button 
+                            variant="contained" 
+                            color="primary"
+                            size="medium"
+                            style={{
+                              borderRadius: 8,
+                              textTransform: 'none',
+                              fontWeight: 500,
+                              fontSize: '0.8rem',
+                              padding: '6px 12px',
+                              boxShadow: 'none',
+                              backgroundColor: '#3b82f6',
+                              '&:hover': {
+                                backgroundColor: '#2563eb'
+                              }
+                            }}
+                            onClick={() => handleBookNow(pkg)}
+>>>>>>> Stashed changes
                           >
                             Book Now
                           </Button>
@@ -418,14 +888,37 @@ useEffect(() => {
                 </Table>
               </TableContainer>
             ) : (
+<<<<<<< Updated upstream
               <Typography variant="body1" color="textSecondary">
                 No packages available at this time.
               </Typography>
+=======
+              <Box 
+                style={{ 
+                  width: '100%',
+                  padding: 24,
+                  textAlign: 'center',
+                  backgroundColor: '#f8fafc',
+                  borderRadius: 12
+                }}
+              >
+                <Typography 
+                  variant="body1" 
+                  style={{ 
+                    color: '#64748b',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  No packages available at this time.
+                </Typography>
+              </Box>
+>>>>>>> Stashed changes
             )}
           </AccordionDetails>
         </Accordion>
       </Box>
 
+<<<<<<< Updated upstream
       {/* Reviews Section */}
       <Box>
         <Typography variant="h4" component="h2" style={{ marginBottom: 24, fontWeight: 'bold' }}>
@@ -554,5 +1047,15 @@ useEffect(() => {
     </Container>
   );
 };
+=======
+      <HotelReviews 
+        hotelId={id} 
+        initialReviews={reviews}
+        currentUser={currentUser}
+      />
+          </Container>
+        );
+      };
+>>>>>>> Stashed changes
 
 export default HotelReservationPage;

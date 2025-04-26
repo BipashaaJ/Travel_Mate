@@ -11,6 +11,8 @@ const PORT = process.env.PORT || 3000;
 const UserRoutes = require("./routes/userRoute");
 const HotelRoutes = require("./routes/hotelRoute");
 const DestinationRoutes = require("./routes/destinationRoute");
+const ReviewRoutes = require("./routes/reviewRoute");
+const HotelBookingRoutes = require("./routes/bookingRoute");
 
 //tourpakcage
 const routes = require("./routes/packages")
@@ -21,8 +23,8 @@ const app = express();
 
 app.use(cors()); // Enable CORS
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 // Serve static files from the 'public' directory
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
@@ -33,10 +35,16 @@ db_connection();
 app.use("/user", UserRoutes);  
 app.use("/hotel", HotelRoutes);  
 app.use("/destination", DestinationRoutes);  
+app.use("/review", ReviewRoutes);  
+app.use("/booking", HotelBookingRoutes);  
+
 //touepackage  
 app.use("/api/package",routes);
 app.use("/api/book", bookingRoutes);
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

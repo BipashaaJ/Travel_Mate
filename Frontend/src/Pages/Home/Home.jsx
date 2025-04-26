@@ -67,11 +67,21 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+<<<<<<< Updated upstream
     padding: theme.spacing(4),
     transition: 'transform 0.3s ease',
     '&:hover': {
       transform: 'translateY(-10px)',
     }
+=======
+    transition: 'transform 0.3s ease',
+    '&:hover': {
+      transform: 'translateY(-10px)',
+    },
+    paddingBottom:'20px',
+    paddingLeft:'15px',
+    paddingRight:'15px'
+>>>>>>> Stashed changes
   },
   testimonialCard: {
     padding: theme.spacing(3),
@@ -129,25 +139,44 @@ const Home = () => {
     }
   ];
 
+<<<<<<< Updated upstream
   // Features data
   const features = [
     {
       icon: <LocationOn className={classes.iconLarge} />,
+=======
+  // Features data with SVG icons
+  const features = [
+    {
+      image: "https://img.freepik.com/premium-vector/summer-time-travel-concept-man-with-map-hands-tourism-trip-holiday-vacation-hiking_118813-25205.jpg?semt=ais_hybrid&w=740",
+>>>>>>> Stashed changes
       title: "Explore Destinations",
       description: "Discover thousands of destinations with detailed guides and local insights."
     },
     {
+<<<<<<< Updated upstream
       icon: <Hotel className={classes.iconLarge} />,
+=======
+      image: "https://img.freepik.com/premium-vector/young-woman-reading-book-studying-home-book-lovers-hobby_273625-1765.jpg?semt=ais_hybrid&w=740",
+>>>>>>> Stashed changes
       title: "Book Accommodations",
       description: "Find and book the perfect hotels, resorts, or homestays for your trip."
     },
     {
+<<<<<<< Updated upstream
       icon: <Restaurant className={classes.iconLarge} />,
+=======
+      image: "https://img.freepik.com/free-photo/woman-enjoying-coffee-by-window_23-2151963090.jpg?semt=ais_hybrid&w=740",
+>>>>>>> Stashed changes
       title: "Local Cuisine",
       description: "Experience authentic local food with our restaurant recommendations."
     },
     {
+<<<<<<< Updated upstream
       icon: <Flight className={classes.iconLarge} />,
+=======
+      image: "https://img.freepik.com/free-vector/traveling-people-with-luggage-boarding-passes-isometric-composition-with-plane-violet_1284-26826.jpg?semt=ais_hybrid&w=740",
+>>>>>>> Stashed changes
       title: "Flight Deals",
       description: "Get the best flight deals and travel packages for your budget."
     }
@@ -342,8 +371,22 @@ const Home = () => {
             {features.map((feature, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
                 <Card className={classes.featureCard} elevation={3}>
+<<<<<<< Updated upstream
                   {feature.icon}
                   <Typography variant="h5" gutterBottom style={{ fontWeight: 'bold' }}>
+=======
+                <img 
+                  src={feature.image} 
+                  alt={feature.title}
+                  style={{ 
+                    width: '380px', 
+                    height: '415px', 
+                    marginBottom: '16px',
+                    objectFit: 'contain' 
+                  }} 
+                />
+                  <Typography variant="h6" gutterBottom style={{ fontWeight: 'bold' }}>
+>>>>>>> Stashed changes
                     {feature.title}
                   </Typography>
                   <Typography variant="body1" color="textSecondary" align="center">

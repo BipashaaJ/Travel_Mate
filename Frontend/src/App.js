@@ -29,6 +29,16 @@ import AdminHome from './Pages/Tourpackage/admin/AdminHome';
 import PackageDetails from './Pages/Tourpackage/customer/PackageDetails';
 import TravelManagement from './Pages/Tourpackage/admin/TravelManagement';
 import AdminBookings from './Pages/Tourpackage/admin/AdminBookings';
+<<<<<<< Updated upstream
+=======
+import ViewReviews from './Pages/Review/ViewReviews';
+import BookingForm from './Pages/Booking/BookingForm';
+import ViewBookings from './Pages/Booking/ViewBookings';
+import UserBookingsPage from './Pages/Booking/UserBookings';
+import AllHotelsPage from './Pages/Hotel/AllHotels';
+import ViewAllDestinationsPage from './Pages/Destination/AllDestinations';
+import DestinationDetails from './Pages/Destination/DestinationDetails';
+>>>>>>> Stashed changes
 
 function App() {
   return (
@@ -48,18 +58,36 @@ function App() {
           <Route path="/add-user" element={<AddUser/>} />
           <Route path="/user-report" element={<UserReportPage/>} />
 
+<<<<<<< Updated upstream
+=======
+          <Route path="/view-reviews" element={<ViewReviews/>} />
+
+>>>>>>> Stashed changes
           <Route path="/dashboard" element={<MainDashboard/>} />
           <Route path="/add-hotel" element={<AddHotel/>} />
           <Route path="/view-hotels" element={<ViewHotels/>} />
           <Route path="/update-hotel/:id" element={<UpdateHotel/>} />
           <Route path="/hotel-report" element={<HotelReportPage/>} />
           <Route path="/reserve-hotel/:id" element={<HotelReservationPage/>} />
+<<<<<<< Updated upstream
+=======
+          <Route path="/hotels" element={<AllHotelsPage/>} />
+
+          <Route path="/booking" element={<BookingForm/>} />
+          <Route path="/view-bookings" element={<ViewBookings/>} />
+          <Route path="/my-bookings" element={<UserBookingsPage/>} />
+>>>>>>> Stashed changes
 
           <Route path="/add-destination" element={<AddDestination/>} />
           <Route path="/view-destination" element={<ViewDestinations/>} />
           <Route path="/update-destination/:id" element={<UpdateDestination/>} />
           <Route path="/hotel-report" element={<HotelReportPage/>} />
           <Route path="/destination-report" element={<DestinationReportPage/>} />
+<<<<<<< Updated upstream
+=======
+          <Route path="/view-more-destinations" element={<ViewAllDestinationsPage/>} />
+          <Route path="/destination-details/:id" element={<DestinationDetails/>} />
+>>>>>>> Stashed changes
 
           {/* Tourpackage Routes */}
           <Route path="/bill" element={<Bill/>} />

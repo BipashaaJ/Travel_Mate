@@ -10,6 +10,10 @@ import Header from '../../Components/navbar';
 import axios from 'axios';
 import swal from 'sweetalert';
 import { makeStyles } from '@material-ui/core/styles';
+<<<<<<< Updated upstream
+=======
+import { useNavigate } from 'react-router-dom';
+>>>>>>> Stashed changes
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,6 +91,13 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: 'none',
       color: theme.palette.primary.main
     }
+<<<<<<< Updated upstream
+=======
+  },
+  requiredLabel: {
+    color: theme.palette.error.main,
+    marginLeft: theme.spacing(0.5)
+>>>>>>> Stashed changes
   }
 }));
 
@@ -106,6 +117,11 @@ const UserRegistration = () => {
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
   const [userId, setUserId] = useState('');
+  const navigate = useNavigate();
+  const [touched, setTouched] = useState({
+    email: false,
+    contact: false
+  });
 
   // Function to generate user ID
   const generateUserId = () => {
@@ -137,13 +153,32 @@ const UserRegistration = () => {
       dob,
       gender,
       password,
-      confirmPassword
+      confirmPassword,
+      profilePicture // Added profile picture as required field
     };
 
     const valid = Object.values(requiredFields).every(field => field !== '' && field !== null);
     const passwordsMatch = password === confirmPassword;
+<<<<<<< Updated upstream
     setIsFormValid(valid && passwordsMatch);
   }, [fullName, email, contact, address, dob, gender, password, confirmPassword]);
+=======
+    
+    // Validate email and contact if they've been touched
+    let emailValid = true;
+    let contactValid = true;
+    
+    if (touched.email && email) {
+      emailValid = validateEmail(email);
+    }
+    
+    if (touched.contact && contact) {
+      contactValid = validateContact(contact);
+    }
+    
+    setIsFormValid(valid && passwordsMatch && emailValid && contactValid);
+  }, [fullName, email, contact, address, dob, gender, password, confirmPassword, profilePicture, touched]);
+>>>>>>> Stashed changes
 
   // Validate contact number (10 digits)
   const validateContact = (value) => {
@@ -160,6 +195,7 @@ const UserRegistration = () => {
   const handleContactChange = (e) => {
     const value = e.target.value;
     setContact(value);
+<<<<<<< Updated upstream
     if (value && !validateContact(value)) {
       setErrors(prevErrors => ({
         ...prevErrors,
@@ -168,11 +204,14 @@ const UserRegistration = () => {
     } else {
       setErrors(prevErrors => ({ ...prevErrors, contact: '' }));
     }
+=======
+>>>>>>> Stashed changes
   };
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
+<<<<<<< Updated upstream
     if (value && !validateEmail(value)) {
       setErrors(prevErrors => ({
         ...prevErrors,
@@ -180,6 +219,34 @@ const UserRegistration = () => {
       }));
     } else {
       setErrors(prevErrors => ({ ...prevErrors, email: '' }));
+=======
+  };
+
+  // Handle field blur for validation
+  const handleBlur = (field) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    
+    if (field === 'email' && email) {
+      if (!validateEmail(email)) {
+        setErrors(prev => ({
+          ...prev,
+          email: "Invalid email format"
+        }));
+      } else {
+        setErrors(prev => ({ ...prev, email: '' }));
+      }
+    }
+    
+    if (field === 'contact' && contact) {
+      if (!validateContact(contact)) {
+        setErrors(prev => ({
+          ...prev,
+          contact: "Contact number must be 10 digits"
+        }));
+      } else {
+        setErrors(prev => ({ ...prev, contact: '' }));
+      }
+>>>>>>> Stashed changes
     }
   };
 
@@ -228,6 +295,13 @@ const UserRegistration = () => {
   const handleRemoveProfilePicture = () => {
     setProfilePicture('');
     setProfilePicturePreview('');
+<<<<<<< Updated upstream
+=======
+    setErrors(prevErrors => ({ 
+      ...prevErrors, 
+      profilePicture: 'Profile picture is required' 
+    }));
+>>>>>>> Stashed changes
   };
 
   const validateForm = () => {
@@ -252,6 +326,7 @@ const UserRegistration = () => {
     if (!password) newErrors.password = "Password is required.";
     if (!confirmPassword) newErrors.confirmPassword = "Confirm password is required.";
     else if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
+    if (!profilePicture) newErrors.profilePicture = "Profile picture is required.";
 
     return newErrors;
   };
@@ -294,10 +369,14 @@ const UserRegistration = () => {
       setProfilePicture('');
       setProfilePicturePreview('');
       setErrors({});
+      setTouched({ email: false, contact: false });
 
       // Generate a new user ID for the next entry
       const newUserId = generateUserId();
       setUserId(newUserId);
+      
+      // Navigate to login page after successful registration
+      navigate('/login');
     } catch (error) {
       console.error(error);
       if (error.response && error.response.status === 409) {
@@ -342,6 +421,10 @@ const UserRegistration = () => {
                 id="profile-picture-upload"
                 type="file"
                 onChange={handleProfilePictureChange}
+<<<<<<< Updated upstream
+=======
+                required
+>>>>>>> Stashed changes
               />
               <label htmlFor="profile-picture-upload">
                 <Button
@@ -369,6 +452,7 @@ const UserRegistration = () => {
               )}
             </Box>
             
+<<<<<<< Updated upstream
             {errors.profilePicture && (
               <Typography variant="caption" color="error" style={{ marginTop: 8 }}>
                 {errors.profilePicture}
@@ -397,6 +481,28 @@ const UserRegistration = () => {
             }}
             helperText="System generated ID (cannot be modified)"
           />
+=======
+            <Box mt={1}>
+              <Typography variant="caption" style={{ color: '#666' }}>
+                Profile Picture 
+                <span className={classes.requiredLabel}>*</span>
+                {!profilePicture && (
+                  <Typography variant="caption" color="error" display="block">
+                    {errors.profilePicture || "Profile picture is required"}
+                  </Typography>
+                )}
+                {errors.profilePicture && profilePicture && (
+                  <Typography variant="caption" color="error" display="block">
+                    {errors.profilePicture}
+                  </Typography>
+                )}
+              </Typography>
+              <Typography variant="caption" style={{ color: '#666' }}>
+                Recommended: Square image, JPG or PNG, max 2MB
+              </Typography>
+            </Box>
+          </Box>
+>>>>>>> Stashed changes
 
           <TextField
             fullWidth
@@ -417,6 +523,7 @@ const UserRegistration = () => {
             variant="outlined"
             value={email}
             onChange={handleEmailChange}
+            onBlur={() => handleBlur('email')}
             helperText={errors.email}
             error={!!errors.email}
             required
@@ -429,8 +536,10 @@ const UserRegistration = () => {
             variant="outlined"
             value={contact}
             onChange={handleContactChange}
+            onBlur={() => handleBlur('contact')}
             helperText={errors.contact}
             error={!!errors.contact}
+            inputProps={{ maxLength: 10, pattern: "[0-9]{10}" }}
             required
           />
 

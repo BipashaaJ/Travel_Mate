@@ -174,10 +174,17 @@ const useStyles = makeStyles((theme) => ({
   infoLabel: {
     fontWeight: 'bold',
     color: theme.palette.text.secondary,
+<<<<<<< Updated upstream
     minWidth: 120,
   },
   infoValue: {
     color: theme.palette.text.primary,
+=======
+    minWidth: 90,
+  },
+  infoValue: {
+    color: theme.palette.text.primary
+>>>>>>> Stashed changes
   },
   actionButton: {
     margin: theme.spacing(0.5),
@@ -596,6 +603,12 @@ const ViewHotels = () => {
                                                   Price: ${pkg.price}
                                                 </Typography>
                                                 <Typography variant="body2" color="textSecondary">
+<<<<<<< Updated upstream
+=======
+                                                  No of Rooms: {pkg.no_of_rooms}
+                                                </Typography>
+                                                <Typography variant="body2" color="textSecondary">
+>>>>>>> Stashed changes
                                                   Inclusions: {pkg.inclusions.join(', ')}
                                                 </Typography>
                                                 <Typography variant="body2" color="textSecondary">

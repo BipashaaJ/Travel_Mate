@@ -17,7 +17,12 @@ import {
   ExitToApp,
   Settings,
   Person,
+<<<<<<< Updated upstream
   Edit
+=======
+  Edit,
+  Book
+>>>>>>> Stashed changes
 } from '@material-ui/icons';
 import './guest_header.css';
 
@@ -76,11 +81,16 @@ const Header = () => {
   const [username, setUsername] = useState('User');
   const [userEmail, setUserEmail] = useState('');
   const [loginType, setLoginType] = useState('');
+<<<<<<< Updated upstream
+=======
+  const [profilePicture, setProfilePicture] = useState('');
+>>>>>>> Stashed changes
   const navigate = useNavigate();
 
   // Track menu open state separately
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+<<<<<<< Updated upstream
   useEffect(() => {
     const handleLoginUpdate = (event) => {
       const { username: newUsername, email } = event.detail;
@@ -121,6 +131,56 @@ const Header = () => {
       window.removeEventListener('loginUpdate', handleLoginUpdate);
     };
   }, []);
+=======
+// In your Header component, make sure the useEffect is properly handling the profile picture:
+useEffect(() => {
+  const handleLoginUpdate = (event) => {
+    const { username: newUsername, email, profilePicture: newProfilePicture } = event.detail;
+    
+    if (email === 'admin@gmail.com') {
+      setUsername('Admin');
+      setUserEmail(email);
+      setLoginType('admin');
+      setProfilePicture(newProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+    } 
+    else if (newUsername) {
+      setUsername(newUsername);
+      setUserEmail(email || '');
+      setLoginType('user');
+      setProfilePicture(newProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+    } 
+    else {
+      setUsername('User');
+      setUserEmail('');
+      setLoginType('');
+      setProfilePicture('');
+    }
+  };
+
+  window.addEventListener('loginUpdate', handleLoginUpdate);
+
+  const storedEmail = localStorage.getItem('userEmail');
+  const storedUsername = localStorage.getItem('username');
+  const storedProfilePicture = localStorage.getItem('profilePicture');
+
+  if (storedEmail === 'admin@gmail.com') {
+    setUsername('Admin');
+    setUserEmail(storedEmail);
+    setLoginType('admin');
+    setProfilePicture(storedProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+  } else if (storedUsername) {
+    setUsername(storedUsername);
+    setUserEmail(storedEmail || '');
+    setLoginType('user');
+    setProfilePicture(storedProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+  }
+
+  return () => {
+    window.removeEventListener('loginUpdate', handleLoginUpdate);
+  };
+}, []);
+
+>>>>>>> Stashed changes
 
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -137,11 +197,19 @@ const Header = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
+<<<<<<< Updated upstream
+=======
+    localStorage.removeItem('profilePicture'); // Clear profile picture on logout
+>>>>>>> Stashed changes
     
     // Force state update before closing menu
     setUsername('User');
     setUserEmail('');
     setLoginType('');
+<<<<<<< Updated upstream
+=======
+    setProfilePicture('');
+>>>>>>> Stashed changes
     
     window.dispatchEvent(new CustomEvent('loginUpdate', {
       detail: { username: 'User', email: '' }
@@ -150,6 +218,9 @@ const Header = () => {
     handleClose();
     navigate('/login');
   };
+
+  // Default avatar URL if no profile picture is set
+  const defaultAvatar = "https://www.w3schools.com/howto/img_avatar.png";
 
   return (
     <Box className="header-container">
@@ -181,8 +252,13 @@ const Header = () => {
           </Typography>
           <IconButton color="inherit" onClick={handleProfileClick}>
             <Avatar
+<<<<<<< Updated upstream
               src="https://www.w3schools.com/howto/img_avatar.png"
               alt="User Avatar"
+=======
+              src={profilePicture || defaultAvatar}
+              alt={username}
+>>>>>>> Stashed changes
               style={{ width: 40, height: 40 }}
             />
           </IconButton>
@@ -209,7 +285,11 @@ const Header = () => {
             >
               <Box className={classes.menuHeader}>
                 <Avatar 
+<<<<<<< Updated upstream
                   src="https://www.w3schools.com/howto/img_avatar.png" 
+=======
+                  src={profilePicture || defaultAvatar}
+>>>>>>> Stashed changes
                   className={classes.avatarLarge}
                 />
                 <Typography variant="subtitle1" className={classes.usernameText}>
@@ -242,18 +322,30 @@ const Header = () => {
 
               {loginType === 'user' && (
                 <>
+<<<<<<< Updated upstream
                   <MenuItem onClick={() => { navigate('/profile'); handleClose(); }}>
                     <ListItemIcon>
                       <Person fontSize="small" />
                     </ListItemIcon>
                     View Profile
                   </MenuItem>
+=======
+>>>>>>> Stashed changes
                   <MenuItem onClick={() => { navigate('/edit-profile'); handleClose(); }}>
                     <ListItemIcon>
                       <Edit fontSize="small" />
                     </ListItemIcon>
                     Edit Profile
                   </MenuItem>
+<<<<<<< Updated upstream
+=======
+                  <MenuItem onClick={() => { navigate('/my-bookings'); handleClose(); }}>
+                    <ListItemIcon>
+                      <Book fontSize="small" />
+                    </ListItemIcon>
+                    My Bookings
+                  </MenuItem>
+>>>>>>> Stashed changes
                   <Divider />
                   <MenuItem onClick={handleLogout} className={classes.logoutItem}>
                     <ListItemIcon>

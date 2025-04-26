@@ -24,6 +24,11 @@ const AddUser = () => {
   const [profilePicturePreview, setProfilePicturePreview] = useState('');
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+<<<<<<< Updated upstream
+=======
+  const [error, setError] = useState("");
+  
+>>>>>>> Stashed changes
 
   // Function to generate user ID
   const generateUserId = () => {
@@ -97,6 +102,7 @@ const AddUser = () => {
   };
 
   const handleEmailChange = (e) => {
+<<<<<<< Updated upstream
     const value = e.target.value;
     setEmail(value);
 
@@ -110,6 +116,20 @@ const AddUser = () => {
       setErrors(prevErrors => ({ ...prevErrors, email: '' }));
     }
   };
+=======
+    const inputValue = e.target.value;
+    setEmail(inputValue);
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!emailPattern.test(inputValue)) {
+      setError("Enter a valid email address");
+    } else {
+      setError("");
+    }
+  };
+  
+>>>>>>> Stashed changes
 
   const handleGenderChange = (event) => {
     setGender(event.target.value);
@@ -186,6 +206,11 @@ const AddUser = () => {
     return newErrors;
   };
 
+<<<<<<< Updated upstream
+=======
+  
+
+>>>>>>> Stashed changes
   const handleSubmit = async (event) => {
     event.preventDefault();
     const validationErrors = validateForm();
@@ -413,10 +438,18 @@ const AddUser = () => {
                     margin="normal"
                     label="Email"
                     variant="outlined"
+<<<<<<< Updated upstream
                     value={email}
                     onChange={handleEmailChange}
                     helperText={errors.email}
                     error={!!errors.email}
+=======
+                    type="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    helperText={error}
+                    error={!!error}
+>>>>>>> Stashed changes
                     required
                   />
 
@@ -430,6 +463,10 @@ const AddUser = () => {
                     helperText={errors.contact}
                     error={!!errors.contact}
                     required
+<<<<<<< Updated upstream
+=======
+                    inputProps={{ maxLength: 10, pattern: "[0-9]{10}" }}
+>>>>>>> Stashed changes
                   />
 
                   <TextField

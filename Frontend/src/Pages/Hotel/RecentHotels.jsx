@@ -116,7 +116,11 @@ const RecentHotels = () => {
   };
 
   const handleViewMoreHotels = () => {
+<<<<<<< Updated upstream
     navigate('/reserve-hotels');
+=======
+    navigate('/hotels');
+>>>>>>> Stashed changes
   };
 
   return (
