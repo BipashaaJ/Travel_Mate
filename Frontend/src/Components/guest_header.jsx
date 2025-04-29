@@ -17,7 +17,8 @@ import {
   ExitToApp,
   Settings,
   Person,
-  Edit
+  Edit,
+  Book
 } from '@material-ui/icons';
 import './guest_header.css';
 
@@ -76,51 +77,60 @@ const Header = () => {
   const [username, setUsername] = useState('User');
   const [userEmail, setUserEmail] = useState('');
   const [loginType, setLoginType] = useState('');
+  const [profilePicture, setProfilePicture] = useState('');
   const navigate = useNavigate();
 
   // Track menu open state separately
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleLoginUpdate = (event) => {
-      const { username: newUsername, email } = event.detail;
-      
-      if (email === 'admin@gmail.com') {
-        setUsername('Admin');
-        setUserEmail(email);
-        setLoginType('admin');
-      } 
-      else if (newUsername) {
-        setUsername(newUsername);
-        setUserEmail(email || '');
-        setLoginType('user');
-      } 
-      else {
-        setUsername('User');
-        setUserEmail('');
-        setLoginType('');
-      }
-    };
-
-    window.addEventListener('loginUpdate', handleLoginUpdate);
-
-    const storedEmail = localStorage.getItem('userEmail');
-    const storedUsername = localStorage.getItem('username');
-
-    if (storedEmail === 'admin@gmail.com') {
+// In your Header component, make sure the useEffect is properly handling the profile picture:
+useEffect(() => {
+  const handleLoginUpdate = (event) => {
+    const { username: newUsername, email, profilePicture: newProfilePicture } = event.detail;
+    
+    if (email === 'admin@gmail.com') {
       setUsername('Admin');
-      setUserEmail(storedEmail);
+      setUserEmail(email);
       setLoginType('admin');
-    } else if (storedUsername) {
-      setUsername(storedUsername);
-      setUserEmail(storedEmail || '');
+      setProfilePicture(newProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+    } 
+    else if (newUsername) {
+      setUsername(newUsername);
+      setUserEmail(email || '');
       setLoginType('user');
+      setProfilePicture(newProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+    } 
+    else {
+      setUsername('User');
+      setUserEmail('');
+      setLoginType('');
+      setProfilePicture('');
     }
+  };
 
-    return () => {
-      window.removeEventListener('loginUpdate', handleLoginUpdate);
-    };
-  }, []);
+  window.addEventListener('loginUpdate', handleLoginUpdate);
+
+  const storedEmail = localStorage.getItem('userEmail');
+  const storedUsername = localStorage.getItem('username');
+  const storedProfilePicture = localStorage.getItem('profilePicture');
+
+  if (storedEmail === 'admin@gmail.com') {
+    setUsername('Admin');
+    setUserEmail(storedEmail);
+    setLoginType('admin');
+    setProfilePicture(storedProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+  } else if (storedUsername) {
+    setUsername(storedUsername);
+    setUserEmail(storedEmail || '');
+    setLoginType('user');
+    setProfilePicture(storedProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+  }
+
+  return () => {
+    window.removeEventListener('loginUpdate', handleLoginUpdate);
+  };
+}, []);
+
 
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -137,11 +147,13 @@ const Header = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
+    localStorage.removeItem('profilePicture'); // Clear profile picture on logout
     
     // Force state update before closing menu
     setUsername('User');
     setUserEmail('');
     setLoginType('');
+    setProfilePicture('');
     
     window.dispatchEvent(new CustomEvent('loginUpdate', {
       detail: { username: 'User', email: '' }
@@ -150,6 +162,9 @@ const Header = () => {
     handleClose();
     navigate('/login');
   };
+
+  // Default avatar URL if no profile picture is set
+  const defaultAvatar = "https://www.w3schools.com/howto/img_avatar.png";
 
   return (
     <Box className="header-container">
@@ -181,8 +196,8 @@ const Header = () => {
           </Typography>
           <IconButton color="inherit" onClick={handleProfileClick}>
             <Avatar
-              src="https://www.w3schools.com/howto/img_avatar.png"
-              alt="User Avatar"
+              src={profilePicture || defaultAvatar}
+              alt={username}
               style={{ width: 40, height: 40 }}
             />
           </IconButton>
@@ -209,7 +224,7 @@ const Header = () => {
             >
               <Box className={classes.menuHeader}>
                 <Avatar 
-                  src="https://www.w3schools.com/howto/img_avatar.png" 
+                  src={profilePicture || defaultAvatar}
                   className={classes.avatarLarge}
                 />
                 <Typography variant="subtitle1" className={classes.usernameText}>
@@ -242,17 +257,17 @@ const Header = () => {
 
               {loginType === 'user' && (
                 <>
-                  <MenuItem onClick={() => { navigate('/profile'); handleClose(); }}>
-                    <ListItemIcon>
-                      <Person fontSize="small" />
-                    </ListItemIcon>
-                    View Profile
-                  </MenuItem>
                   <MenuItem onClick={() => { navigate('/edit-profile'); handleClose(); }}>
                     <ListItemIcon>
                       <Edit fontSize="small" />
                     </ListItemIcon>
                     Edit Profile
+                  </MenuItem>
+                  <MenuItem onClick={() => { navigate('/my-bookings'); handleClose(); }}>
+                    <ListItemIcon>
+                      <Book fontSize="small" />
+                    </ListItemIcon>
+                    My Bookings
                   </MenuItem>
                   <Divider />
                   <MenuItem onClick={handleLogout} className={classes.logoutItem}>
@@ -279,6 +294,5 @@ const Header = () => {
     </Box>
   );
 };
-
 
 export default Header;

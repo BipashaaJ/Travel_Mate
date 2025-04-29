@@ -174,10 +174,10 @@ const useStyles = makeStyles((theme) => ({
   infoLabel: {
     fontWeight: 'bold',
     color: theme.palette.text.secondary,
-    minWidth: 120,
+    minWidth: 90,
   },
   infoValue: {
-    color: theme.palette.text.primary,
+    color: theme.palette.text.primary
   },
   actionButton: {
     margin: theme.spacing(0.5),
@@ -594,6 +594,9 @@ const ViewHotels = () => {
                                               <>
                                                 <Typography variant="body2" color="textSecondary">
                                                   Price: ${pkg.price}
+                                                </Typography>
+                                                <Typography variant="body2" color="textSecondary">
+                                                  No of Rooms: {pkg.no_of_rooms}
                                                 </Typography>
                                                 <Typography variant="body2" color="textSecondary">
                                                   Inclusions: {pkg.inclusions.join(', ')}
