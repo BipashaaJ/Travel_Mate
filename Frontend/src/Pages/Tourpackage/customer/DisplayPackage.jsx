@@ -41,28 +41,28 @@ const DisplayPackage = () => {
   );
 
   return (
-    <div>
-      <h1>Packages</h1>
+    <div className="package-body">
+      <h1 className="package-h1">Packages</h1>
 
-      <div className="search-container">
+      <div className="package-search-container">
         <input
           type="text"
           placeholder="Search by package name or location"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
+          className="package-search-input"
         />
       </div>
 
-      <div className="package-list">
+      <div className="package-package-list">
         {filteredCards.map((card) => (
-          <div key={card._id} className="package-card">
-            {card.image && <img src={card.image} alt={card.name} className="card-image" />}
+          <div key={card._id} className="package-package-card">
+            {card.image && <img src={card.image} alt={card.name} className="package-card-image" />}
             <h2>{card.name}</h2>
-            <p className="card-price">Price: Rs{card.price}</p>
-            <p className="card-location">Location: {card.location}</p>
-            <p className="card-duration">Duration: {card.duration}</p>
-            <button className="book-button" onClick={() => handleBookClick(card)}>View</button>
+            <p className="package-card-price">Price: Rs{card.price}</p>
+            <p className="package-card-location">Location: {card.location}</p>
+            <p className="package-card-duration">Duration: {card.duration}</p>
+            <button className="package-book-button" onClick={() => handleBookClick(card)}>View</button>
           </div>
         ))}
       </div>
