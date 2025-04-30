@@ -2,13 +2,101 @@ import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, MenuItem, FormControl, Select, InputLabel, Box,
   Typography, FormHelperText, Grid, RadioGroup, FormControlLabel, Radio,
-  IconButton, Chip, List, ListItem, Paper, Divider, Link
+  IconButton, Chip, List, ListItem, Paper, Divider, Link, Avatar
 } from '@material-ui/core';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import DeleteIcon from '@material-ui/icons/Delete';
 import Header from '../../Components/navbar';
 import axios from 'axios';
 import swal from 'sweetalert';
+import { makeStyles } from '@material-ui/core/styles';
+import { useNavigate } from 'react-router-dom';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing(3),
+    backgroundImage: 'url(https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80)',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundAttachment: 'fixed', // Creates parallax effect
+    position: 'relative',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.4)', // Dark overlay for better text contrast
+    }
+  },
+  formContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: theme.shape.borderRadius * 2,
+    boxShadow: theme.shadows[10],
+    width: '100%',
+    maxWidth: '600px',
+    padding: theme.spacing(4),
+    position: 'relative',
+    zIndex: 1,
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(3),
+    }
+  },
+  title: {
+    fontFamily: '"Montserrat", sans-serif',
+    fontWeight: 700,
+    color: theme.palette.primary.main,
+    textAlign: 'center',
+    marginBottom: theme.spacing(4),
+    textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+  },
+  avatarContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: theme.spacing(3)
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    border: '3px solid #e0e0e0',
+    boxShadow: theme.shadows[3],
+    marginBottom: theme.spacing(2)
+  },
+  submitButton: {
+    marginTop: theme.spacing(3),
+    padding: theme.spacing(1.5),
+    fontSize: '1rem',
+    fontWeight: 600,
+    letterSpacing: 1.1,
+    borderRadius: 50,
+    boxShadow: theme.shadows[2],
+    '&:hover': {
+      boxShadow: theme.shadows[4],
+      transform: 'translateY(-2px)'
+    }
+  },
+  loginLink: {
+    fontWeight: 600,
+    color: theme.palette.primary.dark,
+    '&:hover': {
+      textDecoration: 'none',
+      color: theme.palette.primary.main
+    }
+  },
+  requiredLabel: {
+    color: theme.palette.error.main,
+    marginLeft: theme.spacing(0.5)
+  }
+}));
 
 const UserRegistration = () => {
+  const classes = useStyles();
   // State variables for form fields
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -18,15 +106,20 @@ const UserRegistration = () => {
   const [gender, setGender] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [profilePicture, setProfilePicture] = useState('');
+  const [profilePicturePreview, setProfilePicturePreview] = useState('');
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
   const [userId, setUserId] = useState('');
+  const navigate = useNavigate();
+  const [touched, setTouched] = useState({
+    email: false,
+    contact: false
+  });
 
   // Function to generate user ID
   const generateUserId = () => {
-    // Generate a random 8-digit number
     const randomNum = Math.floor(10000000 + Math.random() * 90000000);
-    // Create user ID with USR prefix followed by 8 digits
     return `USR${randomNum}`;
   };
 
@@ -42,7 +135,7 @@ const UserRegistration = () => {
     today.getFullYear() - 18,
     today.getMonth(),
     today.getDate()
-  ).toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  ).toISOString().split('T')[0];
 
   // Effect to check if all required fields are filled
   useEffect(() => {
@@ -54,17 +147,27 @@ const UserRegistration = () => {
       dob,
       gender,
       password,
-      confirmPassword
+      confirmPassword,
+      profilePicture // Added profile picture as required field
     };
 
-    // Check if all required fields have values
     const valid = Object.values(requiredFields).every(field => field !== '' && field !== null);
-
-    // Check if passwords match
     const passwordsMatch = password === confirmPassword;
-
-    setIsFormValid(valid && passwordsMatch);
-  }, [fullName, email, contact, address, dob, gender, password, confirmPassword]);
+    
+    // Validate email and contact if they've been touched
+    let emailValid = true;
+    let contactValid = true;
+    
+    if (touched.email && email) {
+      emailValid = validateEmail(email);
+    }
+    
+    if (touched.contact && contact) {
+      contactValid = validateContact(contact);
+    }
+    
+    setIsFormValid(valid && passwordsMatch && emailValid && contactValid);
+  }, [fullName, email, contact, address, dob, gender, password, confirmPassword, profilePicture, touched]);
 
   // Validate contact number (10 digits)
   const validateContact = (value) => {
@@ -81,30 +184,37 @@ const UserRegistration = () => {
   const handleContactChange = (e) => {
     const value = e.target.value;
     setContact(value);
-
-    // Real-time validation for contact
-    if (value && !validateContact(value)) {
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        contact: "Contact number must be 10 digits"
-      }));
-    } else {
-      setErrors(prevErrors => ({ ...prevErrors, contact: '' }));
-    }
   };
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
+  };
 
-    // Real-time validation for email
-    if (value && !validateEmail(value)) {
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        email: "Invalid email format"
-      }));
-    } else {
-      setErrors(prevErrors => ({ ...prevErrors, email: '' }));
+  // Handle field blur for validation
+  const handleBlur = (field) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    
+    if (field === 'email' && email) {
+      if (!validateEmail(email)) {
+        setErrors(prev => ({
+          ...prev,
+          email: "Invalid email format"
+        }));
+      } else {
+        setErrors(prev => ({ ...prev, email: '' }));
+      }
+    }
+    
+    if (field === 'contact' && contact) {
+      if (!validateContact(contact)) {
+        setErrors(prev => ({
+          ...prev,
+          contact: "Contact number must be 10 digits"
+        }));
+      } else {
+        setErrors(prev => ({ ...prev, contact: '' }));
+      }
     }
   };
 
@@ -116,6 +226,47 @@ const UserRegistration = () => {
   const handleDobChange = (e) => {
     setDob(e.target.value);
     setErrors(prevErrors => ({ ...prevErrors, dob: '' }));
+  };
+
+  // Handle profile picture upload
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!validTypes.includes(file.type)) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        profilePicture: "Only JPG, JPEG, and PNG files are allowed"
+      }));
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        profilePicture: "File size must be less than 2MB"
+      }));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfilePicturePreview(reader.result);
+      setProfilePicture(reader.result);
+    };
+    reader.readAsDataURL(file);
+    setErrors(prevErrors => ({ ...prevErrors, profilePicture: '' }));
+  };
+
+  // Remove profile picture
+  const handleRemoveProfilePicture = () => {
+    setProfilePicture('');
+    setProfilePicturePreview('');
+    setErrors(prevErrors => ({ 
+      ...prevErrors, 
+      profilePicture: 'Profile picture is required' 
+    }));
   };
 
   const validateForm = () => {
@@ -140,6 +291,7 @@ const UserRegistration = () => {
     if (!password) newErrors.password = "Password is required.";
     if (!confirmPassword) newErrors.confirmPassword = "Confirm password is required.";
     else if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
+    if (!profilePicture) newErrors.profilePicture = "Profile picture is required.";
 
     return newErrors;
   };
@@ -152,7 +304,6 @@ const UserRegistration = () => {
       return;
     }
 
-    // Format date of birth for backend
     const formattedDOB = new Date(dob).toISOString();
 
     const newUser = {
@@ -163,13 +314,12 @@ const UserRegistration = () => {
       address,
       dob: formattedDOB,
       gender,
-      password
+      password,
+      profile_picture: profilePicture
     };
 
     try {
-      // Create the user
       await axios.post('http://localhost:3001/user/register', newUser);
-
       swal("Success", "User registered successfully!", "success");
 
       // Reset form fields but keep the user ID
@@ -181,20 +331,21 @@ const UserRegistration = () => {
       setGender('');
       setPassword('');
       setConfirmPassword('');
+      setProfilePicture('');
+      setProfilePicturePreview('');
       setErrors({});
+      setTouched({ email: false, contact: false });
 
       // Generate a new user ID for the next entry
       const newUserId = generateUserId();
       setUserId(newUserId);
+      
+      // Navigate to login page after successful registration
+      navigate('/login');
     } catch (error) {
       console.error(error);
-
-      // Check if it's a duplicate error (HTTP 409 Conflict)
       if (error.response && error.response.status === 409) {
-        // Show the specific error message from the server
         swal("Error", error.response.data.message, "error");
-
-        // Set appropriate field error based on the error message
         if (error.response.data.message.includes("contact")) {
           setErrors(prevErrors => ({
             ...prevErrors,
@@ -207,71 +358,82 @@ const UserRegistration = () => {
           }));
         }
       } else {
-        // Generic error message for other errors
         swal("Error", "Something went wrong. Please try again.", "error");
       }
     }
   };
 
   return (
-    <Box
-      style={{
-        backgroundImage: 'url(https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px'
-      }}
-    >
-      <Box
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          borderRadius: 8,
-          boxShadow: '0px 0px 15px rgba(0,0,0,0.2)',
-          width: '100%',
-          maxWidth: '550px',
-          padding: '30px',
-          margin: '40px 0'
-        }}
-      >
-        {/* Title Section */}
-        <Typography 
-          variant="h4" 
-          gutterBottom 
-          style={{
-            fontFamily: 'cursive',
-            fontWeight: 'bold',
-            color: 'purple',
-            textAlign: 'center',
-            marginBottom: '30px'
-          }}
-        >
-          Register for TravelMate
+    <Box className={classes.root}>
+      <Box className={classes.formContainer}>
+        <Typography variant="h4" className={classes.title}>
+          Join TravelMate
         </Typography>
 
-        {/* Form Section */}
         <Box component="form" noValidate autoComplete="off" onSubmit={handleSubmit}>
-          {/* User ID field (read-only) with gray styling */}
-          <TextField
-            fullWidth
-            margin="normal"
-            label="User ID"
-            variant="outlined"
-            value={userId}
-            InputProps={{
-              readOnly: true,
-              style: {
-                backgroundColor: '#f0f0f0', // Light gray background
-                color: '#757575',           // Darker gray text
-                cursor: 'not-allowed',      // Change cursor to indicate it's not editable
-              },
-            }}
-            helperText="System generated ID (cannot be modified)"
-          />
+          {/* Profile Picture Section */}
+          <Box className={classes.avatarContainer}>
+            <Avatar
+              src={profilePicturePreview}
+              className={classes.avatar}
+              alt={fullName || "Profile"}
+            />
+            
+            <Box display="flex" alignItems="center">
+              <input
+                accept="image/*"
+                style={{ display: 'none' }}
+                id="profile-picture-upload"
+                type="file"
+                onChange={handleProfilePictureChange}
+                required
+              />
+              <label htmlFor="profile-picture-upload">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component="span"
+                  startIcon={<CloudUploadIcon />}
+                  size="small"
+                  style={{ marginRight: 8 }}
+                >
+                  Upload
+                </Button>
+              </label>
+              
+              {profilePicturePreview && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<DeleteIcon />}
+                  onClick={handleRemoveProfilePicture}
+                  size="small"
+                >
+                  Remove
+                </Button>
+              )}
+            </Box>
+            
+            <Box mt={1}>
+              <Typography variant="caption" style={{ color: '#666' }}>
+                Profile Picture 
+                <span className={classes.requiredLabel}>*</span>
+                {!profilePicture && (
+                  <Typography variant="caption" color="error" display="block">
+                    {errors.profilePicture || "Profile picture is required"}
+                  </Typography>
+                )}
+                {errors.profilePicture && profilePicture && (
+                  <Typography variant="caption" color="error" display="block">
+                    {errors.profilePicture}
+                  </Typography>
+                )}
+              </Typography>
+              <Typography variant="caption" style={{ color: '#666' }}>
+                Recommended: Square image, JPG or PNG, max 2MB
+              </Typography>
+            </Box>
+          </Box>
 
           <TextField
             fullWidth
@@ -292,6 +454,7 @@ const UserRegistration = () => {
             variant="outlined"
             value={email}
             onChange={handleEmailChange}
+            onBlur={() => handleBlur('email')}
             helperText={errors.email}
             error={!!errors.email}
             required
@@ -304,8 +467,10 @@ const UserRegistration = () => {
             variant="outlined"
             value={contact}
             onChange={handleContactChange}
+            onBlur={() => handleBlur('contact')}
             helperText={errors.contact}
             error={!!errors.contact}
+            inputProps={{ maxLength: 10, pattern: "[0-9]{10}" }}
             required
           />
 
@@ -323,7 +488,6 @@ const UserRegistration = () => {
             required
           />
 
-          {/* Native HTML date input instead of Material-UI DatePicker */}
           <TextField
             fullWidth
             margin="normal"
@@ -362,7 +526,7 @@ const UserRegistration = () => {
             variant="outlined"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            helperText={errors.password}
+            helperText={errors.password || "At least 8 characters"}
             error={!!errors.password}
             required
           />
@@ -386,18 +550,17 @@ const UserRegistration = () => {
             color="primary"
             size="large"
             type="submit"
-            style={{ marginTop: 25 }}
+            className={classes.submitButton}
             disabled={!isFormValid}
           >
-            Register User
+            Create Account
           </Button>
           
-          {/* Login link */}
           <Box mt={4} textAlign="center">
             <Typography variant="body1">
               Already have an account?{' '}
-              <Link href="/login" style={{ fontWeight: 'bold' }}>
-                Login here
+              <Link href="/login" className={classes.loginLink}>
+                Sign in here
               </Link>
             </Typography>
           </Box>

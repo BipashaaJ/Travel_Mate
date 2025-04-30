@@ -1,25 +1,56 @@
+/* AdminBookings.css */
+
 /* Wrapper to ensure footer stays at the bottom */
 .admin-bookings-wrapper {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Ensures footer sticks to the bottom */
+    min-height: 100vh;
 }
 
 /* Container for the main content */
 .admin-bookings-container {
     flex: 1;
-    padding: 10px; /* Reduced padding */
+    padding: 10px;
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
 }
 
 /* Header Styling */
 .admin-bookings-container h1 {
     text-align: center;
-    margin-bottom: 10px; /* Reduced margin */
+    margin-bottom: 10px;
     color: #333;
-    font-size: 1.5em; /* Smaller font size */
+    font-size: 1.5em;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Search Form Styling */
+.admin-bookings-container form {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.admin-bookings-container input {
+    margin-right: 10px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+}
+
+.admin-bookings-container button[type="submit"] {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.admin-bookings-container button[type="submit"]:hover {
+    background-color: #45a049;
 }
 
 /* Table Styling */
@@ -36,9 +67,9 @@
 .admin-bookings-container th,
 .admin-bookings-container td {
     border: 1px solid #ddd;
-    padding: 8px; /* Reduced padding */
+    padding: 8px;
     text-align: center;
-    font-size: 0.9em; /* Smaller font size for better fit */
+    font-size: 0.9em;
 }
 
 .admin-bookings-container th {
@@ -58,34 +89,75 @@
 
 /* Button Styling */
 .admin-bookings-container button {
-    padding: 5px 10px; /* Reduced padding */
+    padding: 5px 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.8em; /* Smaller button text */
+    font-size: 0.8em;
     transition: background-color 0.3s ease;
+    margin: 2px;
 }
 
-/* Delete button specifically red */
-.delete-button {
-    background-color: #e74c3c; /* Bright red for delete */
+/* Action Buttons */
+.admin-bookings-edit-button {
+    background-color: #3498db;
     color: white;
 }
 
-.delete-button:hover {
-    background-color: #c0392b; /* Darker red on hover */
+.admin-bookings-edit-button:hover {
+    background-color: #2980b9;
+}
+
+.admin-bookings-delete-button {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.admin-bookings-delete-button:hover {
+    background-color: #c0392b;
+}
+
+/* Navigation Buttons */
+.admin-bookings-back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #3d3e3f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.admin-bookings-back-button:hover {
+    background-color: #acb0b4;
+}
+
+.admin-bookings-download-pdf-button {
+    margin: 10px 0;
+    padding: 10px 20px;
+    background-color: #ce940d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.admin-bookings-download-pdf-button:hover {
+    background-color: #f5c401;
 }
 
 /* Footer Styling */
-.footer {
+.admin-bookings-footer {
     background-color: #333;
     color: #fff;
     text-align: center;
-    padding: 10px 0; /* Reduced padding */
-    font-size: 0.8em; /* Smaller footer text */
+    padding: 10px 0;
+    font-size: 0.8em;
     width: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin-top: auto; /* Ensures footer is always at the bottom */
+    margin-top: auto;
 }
 
 /* Responsive Design */
@@ -94,11 +166,11 @@
     .admin-bookings-container th,
     .admin-bookings-container td {
         display: block;
-        width: 100%; /* Make each cell full width */
+        width: 100%;
     }
 
     .admin-bookings-container th {
-        display: none; /* Hide header on small screens */
+        display: none;
     }
 
     .admin-bookings-container td {
@@ -116,55 +188,15 @@
     }
 
     .admin-bookings-container tr {
-        margin-bottom: 10px; /* Reduced margin */
+        margin-bottom: 10px;
         display: block;
         border: 1px solid #ddd;
         border-radius: 8px;
         padding: 10px;
     }
-}
 
-/* src/components/SearchBookings.css */
-input {
-    margin-right: 10px;
-}
-
-button {
-    padding: 5px 10px;
-}
-
-div {
-    margin-top: 20px;
-}
-.admin-bookings-container {
-    position: relative; /* Allows positioning of the button */
-}
-
-.back-button {
-    position: absolute; /* Position the button in the top left corner */
-    top: 20px; /* Adjust the distance from the top */
-    left: 20px; /* Adjust the distance from the left */
-    padding: 10px 20px;
-    background-color: #3d3e3f; /* Customize your button color */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.back-button:hover {
-    background-color: #acb0b4; /* Darker shade on hover */
-}
-.download-pdf-button {
-    margin: 10px 0;
-    padding: 10px 20px;
-    background-color: #ce940d; /* Green */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.download-pdf-button:hover {
-    background-color: #f5c401;
+    .admin-bookings-back-button {
+        position: static;
+        margin-bottom: 15px;
+    }
 }

@@ -16,7 +16,6 @@ const PackageDetails = () => {
     startDate: '',
   });
 
-  // Function to get today's date in 'YYYY-MM-DD' format
   const getTodayDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -25,19 +24,16 @@ const PackageDetails = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // Set minimum start date (today) and maximum start date (2 years from now)
   const [minStartDate, setMinStartDate] = useState(getTodayDate());
   const [maxStartDate, setMaxStartDate] = useState(
-    `${new Date().getFullYear() + 2}-12-31` // December 31 of two years from now
+    `${new Date().getFullYear() + 2}-12-31`
   );
 
-  // Handle changes for form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Restrict input to only numbers for contact number field and show alert for invalid input
   const handleNumberKeyPress = (e) => {
     const charCode = e.which ? e.which : e.keyCode;
     const charStr = String.fromCharCode(charCode);
@@ -48,7 +44,6 @@ const PackageDetails = () => {
     }
   };
 
-  // Restrict input to only letters and spaces for customer name field and show alert for invalid input
   const handleNameKeyPress = (e) => {
     const charCode = e.which ? e.which : e.keyCode;
     const charStr = String.fromCharCode(charCode);
@@ -59,12 +54,10 @@ const PackageDetails = () => {
     }
   };
 
-  // Prevent keyboard input for number of people and start date
   const handleKeyDown = (e) => {
     e.preventDefault();
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -107,17 +100,17 @@ const PackageDetails = () => {
 
   return (
     <div className="package-details-container">
-      <div className="package-card">
+      <div className="package-details-package-card">
         <h1>{card.name}</h1>
-        <img src={card.image} alt={card.name} className="detail-image" />
+        <img src={card.image} alt={card.name} className="package-details-detail-image" />
         <p><strong>Price:</strong> Rs {card.price}</p>
         <p><strong>Location:</strong> {card.location}</p>
         <p><strong>Duration:</strong> {card.duration} </p>
         <p><strong>Description:</strong> {card.description}</p>
-        <button className="back-button" onClick={() => window.history.back()}>Back to Packages</button>
+        <button className="package-details-back-button" onClick={() => window.history.back()}>Back to Packages</button>
       </div>
 
-      <div className="booking-form">
+      <div className="package-details-booking-form">
         <h2>Booking Form</h2>
         <form onSubmit={handleSubmit}>
           <div>
@@ -164,7 +157,7 @@ const PackageDetails = () => {
               name="numberOfPeople"
               value={formData.numberOfPeople}
               onChange={handleChange}
-              onKeyDown={handleKeyDown} // Prevent keyboard input
+              onKeyDown={handleKeyDown}
               required
               min="1"
             />
@@ -187,13 +180,13 @@ const PackageDetails = () => {
               name="startDate"
               value={formData.startDate}
               onChange={handleChange}
-              onKeyDown={handleKeyDown} // Prevent keyboard input
+              onKeyDown={handleKeyDown}
               min={minStartDate}
-              max={maxStartDate} // Set max date to 2 years from now
+              max={maxStartDate}
               required
             />
           </div>
-          <button type="submit" className="submit-button">Book</button>
+          <button type="submit" className="package-details-submit-button">Book</button>
         </form>
       </div>
     </div>

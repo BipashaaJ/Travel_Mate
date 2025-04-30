@@ -75,7 +75,7 @@ const LoginPage = () => {
       }
       
       // Redirect to dashboard on successful login
-      navigate('/hotel-management');
+      navigate('/');
     } catch (error) {
       // Handle error response from server
       if (error.response && error.response.data) {

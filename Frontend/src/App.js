@@ -29,7 +29,7 @@ import AdminBookings from "./Pages/Tourpackage/admin/AdminBookings"
 
 //import PackingReportGenerator from './Pages/PackingReportGenerator';
 
-import PackingReportGenerator from './Components/PackingReportGenerator';
+import PackingReportGenerator from './Pages/PackingReportGenerator';
 
 
 
