@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  IconButton, 
-  Menu, 
-  MenuItem, 
+import {
+  Box,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
   Avatar,
   Divider,
   ListItemIcon,
-  makeStyles 
+  makeStyles
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link, useNavigate } from 'react-router-dom';
@@ -79,58 +79,51 @@ const Header = () => {
   const [loginType, setLoginType] = useState('');
   const [profilePicture, setProfilePicture] = useState('');
   const navigate = useNavigate();
-
-  // Track menu open state separately
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-// In your Header component, make sure the useEffect is properly handling the profile picture:
-useEffect(() => {
-  const handleLoginUpdate = (event) => {
-    const { username: newUsername, email, profilePicture: newProfilePicture } = event.detail;
-    
-    if (email === 'admin@gmail.com') {
+  useEffect(() => {
+    const handleLoginUpdate = (event) => {
+      const { username: newUsername, email, profilePicture: newProfilePicture } = event.detail;
+      if (email === 'admin@gmail.com') {
+        setUsername('Admin');
+        setUserEmail(email);
+        setLoginType('admin');
+        setProfilePicture(newProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+      } else if (newUsername) {
+        setUsername(newUsername);
+        setUserEmail(email || '');
+        setLoginType('user');
+        setProfilePicture(newProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+      } else {
+        setUsername('User');
+        setUserEmail('');
+        setLoginType('');
+        setProfilePicture('');
+      }
+    };
+
+    window.addEventListener('loginUpdate', handleLoginUpdate);
+
+    const storedEmail = localStorage.getItem('userEmail');
+    const storedUsername = localStorage.getItem('username');
+    const storedProfilePicture = localStorage.getItem('profilePicture');
+
+    if (storedEmail === 'admin@gmail.com') {
       setUsername('Admin');
-      setUserEmail(email);
+      setUserEmail(storedEmail);
       setLoginType('admin');
-      setProfilePicture(newProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
-    } 
-    else if (newUsername) {
-      setUsername(newUsername);
-      setUserEmail(email || '');
+      setProfilePicture(storedProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
+    } else if (storedUsername) {
+      setUsername(storedUsername);
+      setUserEmail(storedEmail || '');
       setLoginType('user');
-      setProfilePicture(newProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
-    } 
-    else {
-      setUsername('User');
-      setUserEmail('');
-      setLoginType('');
-      setProfilePicture('');
+      setProfilePicture(storedProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
     }
-  };
 
-  window.addEventListener('loginUpdate', handleLoginUpdate);
-
-  const storedEmail = localStorage.getItem('userEmail');
-  const storedUsername = localStorage.getItem('username');
-  const storedProfilePicture = localStorage.getItem('profilePicture');
-
-  if (storedEmail === 'admin@gmail.com') {
-    setUsername('Admin');
-    setUserEmail(storedEmail);
-    setLoginType('admin');
-    setProfilePicture(storedProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
-  } else if (storedUsername) {
-    setUsername(storedUsername);
-    setUserEmail(storedEmail || '');
-    setLoginType('user');
-    setProfilePicture(storedProfilePicture || "https://www.w3schools.com/howto/img_avatar.png");
-  }
-
-  return () => {
-    window.removeEventListener('loginUpdate', handleLoginUpdate);
-  };
-}, []);
-
+    return () => {
+      window.removeEventListener('loginUpdate', handleLoginUpdate);
+    };
+  }, []);
 
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -147,23 +140,18 @@ useEffect(() => {
     localStorage.removeItem('username');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
-    localStorage.removeItem('profilePicture'); // Clear profile picture on logout
-    
-    // Force state update before closing menu
+    localStorage.removeItem('profilePicture');
     setUsername('User');
     setUserEmail('');
     setLoginType('');
     setProfilePicture('');
-    
     window.dispatchEvent(new CustomEvent('loginUpdate', {
       detail: { username: 'User', email: '' }
     }));
-    
     handleClose();
     navigate('/login');
   };
 
-  // Default avatar URL if no profile picture is set
   const defaultAvatar = "https://www.w3schools.com/howto/img_avatar.png";
 
   return (
@@ -191,9 +179,15 @@ useEffect(() => {
             <SearchIcon />
           </IconButton>
 
-          <Typography variant="body1" style={{ marginLeft: '8px', color: '#fff' }}>
+          {/* Packing List Button */}
+          <Link to="/AI" style={{ textDecoration: 'none', marginLeft: '12px' }}>
+            <button className="packing-btn">Packing List</button>
+          </Link>
+
+          <Typography variant="body1" style={{ marginLeft: '12px', color: '#fff' }}>
             Hi, {username}
           </Typography>
+
           <IconButton color="inherit" onClick={handleProfileClick}>
             <Avatar
               src={profilePicture || defaultAvatar}
@@ -223,7 +217,7 @@ useEffect(() => {
               elevation={3}
             >
               <Box className={classes.menuHeader}>
-                <Avatar 
+                <Avatar
                   src={profilePicture || defaultAvatar}
                   className={classes.avatarLarge}
                 />

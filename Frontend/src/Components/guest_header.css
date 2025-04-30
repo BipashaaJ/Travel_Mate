@@ -76,4 +76,18 @@
     text-decoration: solid;
   }
   
+  .packing-btn {
+    background-color: #3756f3;
+    color: #0a1118;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .packing-btn:hover {
+    background-color: #81c6f7;
+  }
   
