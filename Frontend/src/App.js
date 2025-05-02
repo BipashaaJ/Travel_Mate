@@ -47,7 +47,7 @@ function App() {
         <Route path="/view-user" element={<UserDetailsView />} />
         <Route path="/edit-profile" element={<EditProfile />} />
 
-        <Route path="/hotel-management" element={<MainDashboard />} />
+        <Route path="/dashboard" element={<MainDashboard />} />
         <Route path="/add-hotel" element={<AddHotel />} />
         <Route path="/view-hotels" element={<ViewHotels />} />
         <Route path="/update-hotel/:id" element={<UpdateHotel />} />
