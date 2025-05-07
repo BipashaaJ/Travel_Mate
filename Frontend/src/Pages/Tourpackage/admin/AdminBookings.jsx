@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import html2canvas from 'html2canvas'; // ✅ Import html2canvas
 import './AdminBookings.css';
+
 
 const AdminBookings = () => {
     const [bookings, setBookings] = useState([]);
@@ -11,6 +13,7 @@ const AdminBookings = () => {
     const [error, setError] = useState(null);
     const [query, setQuery] = useState('');
     const [filteredBookings, setFilteredBookings] = useState([]); 
+    const reportRef = useRef(null); // ✅ Define reportRef
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -50,28 +53,63 @@ const AdminBookings = () => {
         setFilteredBookings(filtered); 
     };
 
-    const downloadPDF = () => {
-        const doc = new jsPDF();
+    const handleDownloadPDF = async () => {
+        if (!reportRef.current) return;
 
-        // Add logo
-        const logoUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYRj_oNWSTZkQ2xVePvXZPRpXs4X-pTqAOTSrd2HPMlnX2UxyjA9GnJFP9VC2NOvwWCeE&usqp=CAU';
-        const img = new Image();
-        img.src = logoUrl;
+        const downloadButtons = document.getElementById("download-buttons");
+        if (downloadButtons) downloadButtons.style.display = "none";
 
-        // Add logo to PDF and generate table
-        img.onload = () => {
-            doc.addImage(img, 'PNG', 10, 10, 30, 30);
-            doc.setFontSize(20);
-            doc.text('Travel-Mate', 50, 30);
+        try {
+            // Load letterhead first
+            const letterhead = new Image();
+            letterhead.src = "/images/letterhead.png"; // Path relative to the public folder
 
-            const now = new Date();
-            const dateString = now.toLocaleDateString();
-            const timeString = now.toLocaleTimeString();
-            doc.setFontSize(12);
-            doc.text(`Downloaded on: ${dateString} at ${timeString}`, 10, 50);
+            letterhead.onload = async () => {
+                const element = reportRef.current;
+                const canvas = await html2canvas(element, { scale: 2, useCORS: true });
 
-            generateTable(doc);
-        };
+                if (downloadButtons) downloadButtons.style.display = "flex";
+
+                const imgData = canvas.toDataURL("image/png");
+                const doc = new jsPDF("p", "mm", "a4");
+
+                // Add Letterhead Image
+                doc.addImage(letterhead, "PNG", 10, 10, 190, 25);
+                
+                doc.setFontSize(20);
+                doc.setTextColor(128, 0, 128); // Purple
+                doc.text("Booking Report", 70, 45);
+                
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 10, 55);
+
+                autoTable(doc, {
+                    startY: 60,
+                    head: [['Package', 'Customer', 'Email', 'Contact', 'People', 'Address', 'Total', 'Date']],
+                    body: filteredBookings.map(b => [
+                        b.package?.name || 'N/A',
+                        b.customerName,
+                        b.email,
+                        b.contactNumber,
+                        b.numberOfPeople,
+                        b.address,
+                        `Rs ${b.totalPrice}`,
+                        new Date(b.bookingDate).toLocaleDateString()
+                    ]),
+                    theme: "grid",
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [212, 172, 13] } // Gold headers
+                });
+
+                // Directly trigger download
+                doc.save("booking_report.pdf");
+            };
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+            alert("Failed to generate PDF.");
+            if (downloadButtons) downloadButtons.style.display = "flex";
+        }
     };
 
     const generateTable = (doc) => {
@@ -112,23 +150,20 @@ const AdminBookings = () => {
     if (error) return <p>{error}</p>;
 
     return (
-        <div className="admin-bookings-wrapper">
-            <div className="admin-bookings-container">
-                <button className="admin-bookings-back-button" onClick={() => navigate('/admin/travel')}>
-                    Back to Travel Management
-                </button>
-                <h1>All Bookings</h1>
-                <form onSubmit={handleSearch}>
-                    <input
-                        type="text"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search by name, email, or date (MM/DD/YYYY)"
-                    />
-                    <button type="submit">Search</button>
-                </form>
-                <button onClick={downloadPDF} className="admin-bookings-download-pdf-button">Download PDF</button>
+        <div className="admin-bookings-container">
+            <h1>All Bookings</h1>
+            <form onSubmit={handleSearch}>
+                <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search by name, email, or date (MM/DD/YYYY)"
+                />
+                <button type="submit">Search</button>
+            </form>
+            <button onClick={handleDownloadPDF} className="download-pdf-button">Download PDF</button>
 
+            <div ref={reportRef}>
                 <table>
                     <thead>
                         <tr>
@@ -156,12 +191,8 @@ const AdminBookings = () => {
                                     <td>Rs {booking.totalPrice}</td>
                                     <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
                                     <td>
-                                        <button onClick={() => handleEdit(booking)} className="admin-bookings-edit-button">
-                                            Edit
-                                        </button>
-                                        <button onClick={() => handleDelete(booking._id)} className="admin-bookings-delete-button">
-                                            Delete
-                                        </button>
+                                        {/* <button onClick={() => handleEdit(booking)} className="edit-button">Edit</button> */}
+                                        <button onClick={() => handleDelete(booking._id)} className="delete-button">Delete</button>
                                     </td>
                                 </tr>
                             ))
@@ -173,9 +204,10 @@ const AdminBookings = () => {
                     </tbody>
                 </table>
             </div>
-            <footer className="admin-bookings-footer">
-                © {new Date().getFullYear()} Travel-Mate. All rights reserved.
-            </footer>
+
+            <button className="back-button" onClick={() => navigate('/admin/travel')}>
+                Back to Travel Management
+            </button>
         </div>
     );
 };

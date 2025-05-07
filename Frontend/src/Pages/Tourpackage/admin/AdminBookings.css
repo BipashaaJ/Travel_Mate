@@ -200,3 +200,14 @@
         margin-bottom: 15px;
     }
 }
+.admin-bookings-container {
+    flex: 1;
+    padding: 20px;
+    max-width: 2000px;
+    margin: 0 auto;
+    position: relative;
+    background-image: url('https://cdn.pixabay.com/photo/2020/05/13/18/58/nature-5168551_640.jpg');  /* Add your image URL here */
+    background-size: cover;  /* Ensures the image covers the entire container */
+    background-position: center;  /* Centers the image */
+    background-repeat: no-repeat;  /* Ensures the image does not repeat */
+}
