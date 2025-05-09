@@ -2,7 +2,6 @@
 
 const express = require("express");
 const PackageBooking = require("../models/PackageBooking"); // Ensure correct casing
-const sendMail = require("../utils/sendMail");
 const router = express.Router();
 
 // POST route to save a new booking
@@ -28,30 +27,8 @@ router.post("/", async (req, res) => {
       .status(201)
       .json({ message: "Booking saved successfully", booking: newBooking });
 
-    const htmlContent = `
-    <html>
-        <body>
-        <h2>Your package has been created successfully!</h2>
-        <p>
-            <strong>Customer Name:</strong> ${req.body.customerName}<br>
-            <strong>Your Number:</strong> ${req.body.contactNumber}<br>
-            <strong>Email:</strong> ${req.body.email}<br>
-            <strong>No of People:</strong> ${req.body.numberOfPeople}<br>
-            <strong>Start Date:</strong> ${req.body.startDate}<br>
-            <strong>Price:</strong> ${req.body.totalPrice}<br>
-        </p>
-        <p>Thank you for choosing our service!</p>
-        </body>
-    </html>
-    `;
+    // ✅ Email sending removed
 
-    sendMail({
-      to: req.body.email,
-      subject: "Package Created",
-      text: `${req.body.packageName} package has been created successfully.`,
-      html: htmlContent,
-    });
-    
   } catch (error) {
     console.error("Error saving booking:", error.message);
     res
@@ -149,23 +126,6 @@ router.delete("/:id", async (req, res) => {
     res
       .status(500)
       .json({ message: "Error deleting booking", error: error.message });
-  }
-});
-
-router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const updatedBooking = req.body;
-
-  try {
-    const booking = await PackageBooking.findByIdAndUpdate(id, updatedBooking, {
-      new: true,
-    });
-    if (!booking) {
-      return res.status(404).send({ message: "Booking not found" });
-    }
-    res.send(booking);
-  } catch (error) {
-    res.status(500).send({ message: "Error updating booking", error });
   }
 });
 

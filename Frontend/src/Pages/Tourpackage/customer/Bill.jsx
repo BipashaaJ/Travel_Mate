@@ -22,6 +22,7 @@ const Bill = () => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [updatedTotalPrice, setUpdatedTotalPrice] = useState(0);
+    const [isSaving, setIsSaving] = useState(false);
 
     const calculateTotalPrice = (details) => {
         return basePrice * (details.numberOfPeople || 1);
@@ -32,7 +33,7 @@ const Bill = () => {
     }, [customerDetails]);
 
     const handleEdit = () => {
-        setIsEditing(!isEditing);
+        setIsEditing(prev => !prev);
     };
 
     const handleChange = (e) => {
@@ -63,13 +64,19 @@ const Bill = () => {
             }
         }
 
-        setCustomerDetails((prevDetails) => ({
+        setCustomerDetails(prevDetails => ({
             ...prevDetails,
             [name]: updatedValue,
         }));
     };
 
     const handlePay = async () => {
+        if (!customerDetails.customerName || !customerDetails.email || !customerDetails.contactNumber || !customerDetails.address || !customerDetails.startDate) {
+            alert('Please fill in all customer details before saving.');
+            return;
+        }
+
+        setIsSaving(true);
         try {
             const response = await axios.post('http://localhost:3001/api/book', {
                 customerName: customerDetails.customerName,
@@ -82,19 +89,13 @@ const Bill = () => {
                 startDate: customerDetails.startDate,
             });
 
-            alert(response.data.message);
-            navigate('/packages');
+            alert(response.data.message || 'Booking saved successfully!');
+            navigate('/packages');  // redirect after saving
         } catch (error) {
             const message = error.response?.data?.message || error.message;
             alert('Error saving booking: ' + message);
-        }
-    };
-
-    const handleDelete = () => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this booking?');
-        if (confirmDelete) {
-            alert('Booking deleted successfully!');
-            navigate('/');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -104,7 +105,7 @@ const Bill = () => {
 
     return (
         <div className="bill-container">
-            <button className="bill-back-button" onClick={() => window.history.back()}>
+            <button className="bill-back-button" onClick={() => navigate(-1)}>
                 Back
             </button>
             <h1>Booking Details</h1>
@@ -114,50 +115,50 @@ const Bill = () => {
                     <>
                         <div className="bill-form-group">
                             <label>Name:</label>
-                            <input 
-                                type="text" 
-                                name="customerName" 
-                                value={customerDetails.customerName} 
-                                onChange={handleChange} 
+                            <input
+                                type="text"
+                                name="customerName"
+                                value={customerDetails.customerName}
+                                onChange={handleChange}
                                 className="bill-input"
                             />
                         </div>
                         <div className="bill-form-group">
                             <label>Email:</label>
-                            <input 
-                                type="email" 
-                                name="email" 
-                                value={customerDetails.email} 
-                                onChange={handleChange} 
+                            <input
+                                type="email"
+                                name="email"
+                                value={customerDetails.email}
+                                onChange={handleChange}
                                 className="bill-input"
                             />
                         </div>
                         <div className="bill-form-group">
                             <label>Contact Number:</label>
-                            <input 
-                                type="tel" 
-                                name="contactNumber" 
-                                value={customerDetails.contactNumber} 
-                                onChange={handleChange} 
+                            <input
+                                type="tel"
+                                name="contactNumber"
+                                value={customerDetails.contactNumber}
+                                onChange={handleChange}
                                 className="bill-input"
                             />
                         </div>
                         <div className="bill-form-group">
                             <label>Number of People:</label>
-                            <input 
-                                type="number" 
-                                name="numberOfPeople" 
-                                value={customerDetails.numberOfPeople} 
-                                onChange={handleChange} 
-                                min="1" 
+                            <input
+                                type="number"
+                                name="numberOfPeople"
+                                value={customerDetails.numberOfPeople}
+                                onChange={handleChange}
+                                min="1"
                                 className="bill-input"
                             />
                         </div>
                         <div className="bill-form-group">
                             <label>Address:</label>
-                            <textarea 
-                                name="address" 
-                                value={customerDetails.address} 
+                            <textarea
+                                name="address"
+                                value={customerDetails.address}
                                 onChange={handleChange}
                                 className="bill-input"
                             ></textarea>
@@ -192,10 +193,12 @@ const Bill = () => {
                 <p><strong>Booking Date:</strong> {billingDate}</p>
                 <p><strong>Booking Time:</strong> {billingTime}</p>
                 <div className="bill-button-group">
-                    <button className="bill-edit-button" onClick={handleEdit}>
+                    <button className="bill-edit-button" onClick={handleEdit} disabled={isSaving}>
                         <FontAwesomeIcon icon={faEdit} /> {isEditing ? 'Done' : 'Edit'}
                     </button>
-                    <button className="bill-pay-button" onClick={handlePay}>Save</button>
+                    <button className="bill-pay-button" onClick={handlePay} disabled={isSaving}>
+                        {isSaving ? 'Saving...' : 'Save'}
+                    </button>
                 </div>
             </div>
         </div>
