@@ -156,9 +156,9 @@ const AdminBookings = () => {
                                     <td>Rs {booking.totalPrice}</td>
                                     <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
                                     <td>
-                                        <button onClick={() => handleEdit(booking)} className="admin-bookings-edit-button">
+                                        {/* <button onClick={() => handleEdit(booking)} className="admin-bookings-edit-button">
                                             Edit
-                                        </button>
+                                        </button> */}
                                         <button onClick={() => handleDelete(booking._id)} className="admin-bookings-delete-button">
                                             Delete
                                         </button>
