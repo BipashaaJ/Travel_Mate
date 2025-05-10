@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import autoTable from 'jspdf-autotable';
 import './AdminBookings.css';
 
 const AdminBookings = () => {
@@ -51,45 +52,61 @@ const AdminBookings = () => {
         setFilteredBookings(filtered);
     };
 
-    const downloadPDF = async () => {
+    const handleDownloadPDF = async () => {
         if (!reportRef.current) return;
 
         const downloadButton = document.querySelector('.admin-bookings-download-pdf-button');
         if (downloadButton) downloadButton.style.display = 'none'; // Hide button before capture
 
         try {
-            const canvas = await html2canvas(reportRef.current, {
-                scale: 2,
-                useCORS: true
-            });
+            // Load letterhead image
+            const letterhead = new Image();
+            letterhead.src = "/images/letterhead.png"; // Path relative to public folder
 
-            if (downloadButton) downloadButton.style.display = 'inline-block'; // Restore button
+            letterhead.onload = async () => {
+                const element = reportRef.current;
+                const canvas = await html2canvas(element, { scale: 2, useCORS: true });
 
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
+                if (downloadButton) downloadButton.style.display = 'inline-block'; // Restore button
 
-            const imgWidth = 210;
-            const pageHeight = 297;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                const imgData = canvas.toDataURL("image/png");
+                const doc = new jsPDF("p", "mm", "a4");
 
-            let heightLeft = imgHeight;
-            let position = 0;
+                // Add letterhead image
+                doc.addImage(letterhead, "PNG", 10, 10, 190, 25);
 
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+                doc.setFontSize(20);
+                doc.setTextColor(128, 0, 128); // Purple
+                doc.text("Booking Report", 70, 45);
 
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 10, 55);
 
-            pdf.save('bookings_report.pdf');
-        } catch (err) {
-            console.error('Error generating PDF:', err);
+                autoTable(doc, {
+                    startY: 60,
+                    head: [['Package', 'Customer', 'Email', 'Contact', 'People', 'Address', 'Total', 'Date']],
+                    body: filteredBookings.map(b => [
+                        b.package?.name || 'N/A',
+                        b.customerName,
+                        b.email,
+                        b.contactNumber,
+                        b.numberOfPeople,
+                        b.address,
+                        `Rs ${b.totalPrice}`,
+                        new Date(b.bookingDate).toLocaleDateString()
+                    ]),
+                    theme: "grid",
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [212, 172, 13] } // Gold header
+                });
+
+                doc.save("booking_report.pdf");
+            };
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+            alert("Failed to generate PDF.");
             if (downloadButton) downloadButton.style.display = 'inline-block';
-            alert('Failed to generate PDF. Please try again.');
         }
     };
 
@@ -127,7 +144,7 @@ const AdminBookings = () => {
                     />
                     <button type="submit">Search</button>
                 </form>
-                <button onClick={downloadPDF} className="admin-bookings-download-pdf-button">Download PDF</button>
+                <button onClick={handleDownloadPDF} className="admin-bookings-download-pdf-button">Download PDF</button>
 
                 <table>
                     <thead>
