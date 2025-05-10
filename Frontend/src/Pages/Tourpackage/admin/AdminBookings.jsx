@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 import './AdminBookings.css';
 
 const AdminBookings = () => {
@@ -10,8 +10,9 @@ const AdminBookings = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [query, setQuery] = useState('');
-    const [filteredBookings, setFilteredBookings] = useState([]); 
+    const [filteredBookings, setFilteredBookings] = useState([]);
     const navigate = useNavigate();
+    const reportRef = useRef(); // ✅ Add ref
 
     useEffect(() => {
         fetchAllBookings();
@@ -22,7 +23,7 @@ const AdminBookings = () => {
         try {
             const response = await axios.get('http://localhost:3001/api/book');
             setBookings(response.data);
-            setFilteredBookings(response.data); 
+            setFilteredBookings(response.data);
             setLoading(false);
         } catch (err) {
             console.error('Error fetching bookings:', err.message);
@@ -47,50 +48,49 @@ const AdminBookings = () => {
             );
         });
 
-        setFilteredBookings(filtered); 
+        setFilteredBookings(filtered);
     };
 
-    const downloadPDF = () => {
-        const doc = new jsPDF();
+    const downloadPDF = async () => {
+        if (!reportRef.current) return;
 
-        // Add logo
-        const logoUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYRj_oNWSTZkQ2xVePvXZPRpXs4X-pTqAOTSrd2HPMlnX2UxyjA9GnJFP9VC2NOvwWCeE&usqp=CAU';
-        const img = new Image();
-        img.src = logoUrl;
+        const downloadButton = document.querySelector('.admin-bookings-download-pdf-button');
+        if (downloadButton) downloadButton.style.display = 'none'; // Hide button before capture
 
-        // Add logo to PDF and generate table
-        img.onload = () => {
-            doc.addImage(img, 'PNG', 10, 10, 30, 30);
-            doc.setFontSize(20);
-            doc.text('Travel-Mate', 50, 30);
+        try {
+            const canvas = await html2canvas(reportRef.current, {
+                scale: 2,
+                useCORS: true
+            });
 
-            const now = new Date();
-            const dateString = now.toLocaleDateString();
-            const timeString = now.toLocaleTimeString();
-            doc.setFontSize(12);
-            doc.text(`Downloaded on: ${dateString} at ${timeString}`, 10, 50);
+            if (downloadButton) downloadButton.style.display = 'inline-block'; // Restore button
 
-            generateTable(doc);
-        };
-    };
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
 
-    const generateTable = (doc) => {
-        autoTable(doc, {
-            head: [['Package Name', 'Customer Name', 'Email', 'Contact Number', 'Number of People', 'Address', 'Total Price', 'Booking Date']],
-            body: filteredBookings.map(booking => [
-                booking.package ? booking.package.name : 'N/A',
-                booking.customerName,
-                booking.email,
-                booking.contactNumber,
-                booking.numberOfPeople,
-                booking.address,
-                `Rs ${booking.totalPrice}`,
-                new Date(booking.bookingDate).toLocaleDateString()
-            ]),
-            startY: 60,
-            theme: 'grid',
-        });
-        doc.save('filtered_bookings.pdf');
+            const imgWidth = 210;
+            const pageHeight = 297;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            pdf.save('bookings_report.pdf');
+        } catch (err) {
+            console.error('Error generating PDF:', err);
+            if (downloadButton) downloadButton.style.display = 'inline-block';
+            alert('Failed to generate PDF. Please try again.');
+        }
     };
 
     const handleEdit = (booking) => {
@@ -113,7 +113,7 @@ const AdminBookings = () => {
 
     return (
         <div className="admin-bookings-wrapper">
-            <div className="admin-bookings-container">
+            <div className="admin-bookings-container" ref={reportRef}>
                 <button className="admin-bookings-back-button" onClick={() => navigate('/admin/travel')}>
                     Back to Travel Management
                 </button>
